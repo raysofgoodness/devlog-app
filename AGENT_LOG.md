@@ -22,3 +22,13 @@
 - `npm install` — `zod`, `@tanstack/react-query`, `react-hook-form`, `@hookform/resolvers`, `date-fns`, `ai`, `@ai-sdk/openai`, `@ai-sdk/anthropic`
 - `better-sqlite3` + `@types/better-sqlite3` — вже були з Фази 0
 - Додаткових `@types/*` не потрібно — усі пакети шерять власні типи
+
+## 2025-06-13 — Фаза 1 · Схеми
+
+**Задача:** `lib/schema.ts` — zod-схеми як single source of truth для типів.
+
+**Зроблено:**
+
+- `taskStatusSchema`, `taskPrioritySchema`, `taskSchema`, `subtaskSchema`
+- `createTaskSchema`, `updateTaskSchema` (PATCH вимагає ≥1 поля)
+- Експорт типів через `z.infer`: `Task`, `Subtask`, `CreateTaskInput`, `UpdateTaskInput`
