@@ -32,3 +32,14 @@
 - `taskStatusSchema`, `taskPrioritySchema`, `taskSchema`, `subtaskSchema`
 - `createTaskSchema`, `updateTaskSchema` (PATCH вимагає ≥1 поля)
 - Експорт типів через `z.infer`: `Task`, `Subtask`, `CreateTaskInput`, `UpdateTaskInput`
+
+## 2025-06-13 — Фаза 1 · Сховище
+
+**Задача:** SQLite + JSON fallback, CRUD для tasks.
+
+**Зроблено:**
+
+- `lib/db.ts` — singleton `getDb()`, WAL, FK, міграції `tasks` + `subtasks`
+- `lib/repo/tasks.ts` — `listTasks`, `getTask`, `createTask`, `updateTask`, `deleteTask` (фільтр `status`, сорт `priority|createdAt`)
+- `lib/repo/json-store.ts` — той самий API; активується через `STORAGE_BACKEND=json`
+- `devlog.json` додано в `.gitignore`
