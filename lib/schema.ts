@@ -9,14 +9,14 @@ export const taskSchema = z.object({
   description: z.string().trim().max(5000),
   status: taskStatusSchema,
   priority: taskPrioritySchema,
-  createdAt: z.iso.datetime(),
+  createdAt: z.iso.datetime({ offset: true }),
 });
 
 export const subtaskSchema = z.object({
   id: z.uuid(),
   taskId: z.uuid(),
   title: z.string().trim().min(1).max(200),
-  createdAt: z.iso.datetime(),
+  createdAt: z.iso.datetime({ offset: true }),
 });
 
 export const createTaskSchema = z.object({

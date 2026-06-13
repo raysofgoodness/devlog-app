@@ -43,3 +43,14 @@
 - `lib/repo/tasks.ts` — `listTasks`, `getTask`, `createTask`, `updateTask`, `deleteTask` (фільтр `status`, сорт `priority|createdAt`)
 - `lib/repo/json-store.ts` — той самий API; активується через `STORAGE_BACKEND=json`
 - `devlog.json` додано в `.gitignore`
+
+## 2025-06-13 — Фаза 1 · API routes
+
+**Задача:** Route handlers для tasks CRUD.
+
+**Зроблено:**
+
+- `app/api/tasks/route.ts` — `GET` (`?status=`, `?sort=priority|createdAt`), `POST` (zod)
+- `app/api/tasks/[id]/route.ts` — `GET`, `PATCH`, `DELETE` (204)
+- `runtime = 'nodejs'` для better-sqlite3
+- Fix: `z.iso.datetime({ offset: true })` — сумісність з `formatISO` від date-fns
