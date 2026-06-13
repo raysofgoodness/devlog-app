@@ -9,5 +9,6 @@
 - Ініціалізовано Next.js 15 додаток
 - `test-db.js` для better-sqlite3 — нативний білд OK, SQLite залишаємо
 - find-docs → актуальні API (Vercel AI SDK, Next.js, better-sqlite3) → `NOTES.md`
+- створив rule для того, щоб Cursor Agent завжди опирався на `NOTES.md`
 
 **Артефакти:** `NOTES.md` (single source of truth для наступних сесій)
