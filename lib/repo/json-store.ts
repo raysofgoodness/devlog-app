@@ -41,9 +41,14 @@ function readStore(): StoreData {
 
     return {
       tasks: parsed.tasks.map((task) => taskSchema.parse(task)),
-      subtasks: (parsed.subtasks ?? []).map((subtask) =>
-        subtaskSchema.parse(subtask),
-      ),
+      subtasks: (parsed.subtasks ?? []).map((subtask) => {
+        const raw = subtask as Subtask & { status?: Subtask['status'] };
+
+        return subtaskSchema.parse({
+          ...raw,
+          status: raw.status ?? 'todo',
+        });
+      }),
     };
   } catch {
     return { tasks: [], subtasks: [] };
@@ -136,4 +141,24 @@ export function deleteTask(id: string): boolean {
 
   writeStore(store);
   return true;
+}
+
+export function toggleSubtaskStatus(id: string): Subtask | null {
+  const store = readStore();
+  const index = store.subtasks.findIndex((subtask) => subtask.id === id);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const current = store.subtasks[index];
+  const updated = subtaskSchema.parse({
+    ...current,
+    status: current.status === 'todo' ? 'done' : 'todo',
+  });
+
+  store.subtasks[index] = updated;
+  writeStore(store);
+
+  return updated;
 }

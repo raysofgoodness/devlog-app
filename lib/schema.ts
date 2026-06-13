@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const taskStatusSchema = z.enum(['todo', 'in-progress', 'done']);
 export const taskPrioritySchema = z.enum(['low', 'medium', 'high']);
+export const subtaskStatusSchema = z.enum(['todo', 'done']);
 
 export const taskSchema = z.object({
   id: z.uuid(),
@@ -16,6 +17,7 @@ export const subtaskSchema = z.object({
   id: z.uuid(),
   taskId: z.uuid(),
   title: z.string().trim().min(1).max(200),
+  status: subtaskStatusSchema,
   createdAt: z.iso.datetime({ offset: true }),
 });
 
@@ -39,6 +41,7 @@ export const updateTaskSchema = z
 
 export type TaskStatus = z.infer<typeof taskStatusSchema>;
 export type TaskPriority = z.infer<typeof taskPrioritySchema>;
+export type SubtaskStatus = z.infer<typeof subtaskStatusSchema>;
 export type Task = z.infer<typeof taskSchema>;
 export type Subtask = z.infer<typeof subtaskSchema>;
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;

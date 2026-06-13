@@ -20,12 +20,24 @@ function migrate(db: Database.Database): void {
       id TEXT PRIMARY KEY,
       task_id TEXT NOT NULL,
       title TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'todo' CHECK (status IN ('todo', 'done')),
       created_at TEXT NOT NULL,
       FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE
     );
 
     CREATE INDEX IF NOT EXISTS idx_subtasks_task_id ON subtasks (task_id);
   `);
+
+  const columns = db
+    .prepare('PRAGMA table_info(subtasks)')
+    .all() as { name: string }[];
+
+  if (!columns.some((column) => column.name === 'status')) {
+    db.exec(`
+      ALTER TABLE subtasks
+      ADD COLUMN status TEXT NOT NULL DEFAULT 'todo';
+    `);
+  }
 }
 
 export function getDb(): Database.Database {

@@ -54,3 +54,18 @@
 - `app/api/tasks/[id]/route.ts` — `GET`, `PATCH`, `DELETE` (204)
 - `runtime = 'nodejs'` для better-sqlite3
 - Fix: `z.iso.datetime({ offset: true })` — сумісність з `formatISO` від date-fns
+
+**Було пропущено:**
+
+- тут агент пропустив і не врахував наші підзадачі, тому прийшлось виправити цей момент і запустити додатку задачу, й внести зміни в схему та `db.ts`
+
+## 2025-06-13 — Фаза 1 · Subtasks PATCH
+
+**Задача:** `PATCH /api/subtasks/[id]` — toggle статусу підзадачі.
+
+**Зроблено:**
+
+- `subtaskStatusSchema` (`todo` | `done`) + поле `status` у `subtaskSchema`
+- Міграція SQLite: колонка `status` (ALTER для існуючих БД)
+- `lib/repo/subtasks.ts` — `toggleSubtaskStatus()`
+- `app/api/subtasks/[id]/route.ts` — `PATCH` без body, flip `todo` ↔ `done`

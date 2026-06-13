@@ -1,0 +1,66 @@
+import { getDb } from '@/lib/db';
+import * as jsonStore from '@/lib/repo/json-store';
+import {
+  subtaskSchema,
+  type Subtask,
+  type SubtaskStatus,
+} from '@/lib/schema';
+
+interface SubtaskRow {
+  id: string;
+  task_id: string;
+  title: string;
+  status: SubtaskStatus;
+  created_at: string;
+}
+
+function useJsonStore(): boolean {
+  return process.env.STORAGE_BACKEND === 'json';
+}
+
+function rowToSubtask(row: SubtaskRow): Subtask {
+  return subtaskSchema.parse({
+    id: row.id,
+    taskId: row.task_id,
+    title: row.title,
+    status: row.status,
+    createdAt: row.created_at,
+  });
+}
+
+function toggleSubtaskStatusSqlite(id: string): Subtask | null {
+  const db = getDb();
+  const getStmt = db.prepare(
+    `SELECT id, task_id, title, status, created_at
+     FROM subtasks
+     WHERE id = @id`,
+  );
+
+  const row = getStmt.get({ id }) as SubtaskRow | undefined;
+
+  if (!row) {
+    return null;
+  }
+
+  const nextStatus: SubtaskStatus = row.status === 'todo' ? 'done' : 'todo';
+
+  const updateStmt = db.prepare(
+    `UPDATE subtasks
+     SET status = @status
+     WHERE id = @id`,
+  );
+
+  const result = updateStmt.run({ id, status: nextStatus });
+
+  if (result.changes === 0) {
+    return null;
+  }
+
+  return rowToSubtask({ ...row, status: nextStatus });
+}
+
+export function toggleSubtaskStatus(id: string): Subtask | null {
+  return useJsonStore()
+    ? jsonStore.toggleSubtaskStatus(id)
+    : toggleSubtaskStatusSqlite(id);
+}
