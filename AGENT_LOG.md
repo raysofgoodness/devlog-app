@@ -1,6 +1,12 @@
 # Agent Log
 
-## 2025-06-13 — Фаза 0 · Cursor
+**Підготовка:** Проаналізував завдання, виконав декомпозицію цього завдання
+
+- для розбиття на зрозумілі фази та підзадачі і складання плану, використовував `Claude Opus 4.8`
+- він підготував мені агентний план, розбитий на фази від 0 до 4, де фаза 0 це була підготовка
+- виділив ключові технічні рішення, також я йому давав промт щоб план включав візуальну Архітектуру агентів, щоб мені було легши її проаналізувати, і внести правки, якщо це потрібно
+
+## Фаза 0 · Cursor
 
 **Задача:** Підготовка проєкту, стрес-тест БД, фіксація API.
 
@@ -69,3 +75,14 @@
 - Міграція SQLite: колонка `status` (ALTER для існуючих БД)
 - `lib/repo/subtasks.ts` — `toggleSubtaskStatus()`
 - `app/api/subtasks/[id]/route.ts` — `PATCH` без body, flip `todo` ↔ `done`
+
+## 2025-06-13 — Фаза 1 · Client data layer
+
+**Задача:** TanStack Query + API client для tasks.
+
+**Зроблено:**
+
+- `lib/api-client.ts` — `fetchTasks`, `fetchTask`, `createTask`, `updateTask`, `deleteTask` + `ApiError`
+- `hooks/useTasks.ts` — `useTasks`, `useCreateTask`, `useUpdateTask`, `useDeleteTask` + `taskKeys`
+- `app/providers.tsx` — `QueryClientProvider`
+- `app/layout.tsx` — обгортка `<Providers>`
