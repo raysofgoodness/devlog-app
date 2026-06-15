@@ -51,6 +51,9 @@ export type TaskPriority = z.infer<typeof taskPrioritySchema>;
 export type SubtaskStatus = z.infer<typeof subtaskStatusSchema>;
 export type Task = z.infer<typeof taskSchema>;
 export type Subtask = z.infer<typeof subtaskSchema>;
+export type TaskWithSubtasks = Task & {
+  subtasks: Subtask[];
+};
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 export type TaskFormValues = z.infer<typeof taskFormSchema>;

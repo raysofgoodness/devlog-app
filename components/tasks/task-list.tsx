@@ -9,16 +9,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import type { Task } from '@/lib/schema';
+import type { TaskWithSubtasks } from '@/lib/schema';
 
 interface TaskListProps {
-  tasks: Task[] | undefined;
+  tasks: TaskWithSubtasks[] | undefined;
   isLoading: boolean;
   isError: boolean;
   errorMessage?: string;
-  onEdit: (task: Task) => void;
-  onDelete: (task: Task) => void;
-  onDecompose?: (task: Task) => void;
+  onEdit: (task: TaskWithSubtasks) => void;
+  onDelete: (task: TaskWithSubtasks) => void;
+  onDecompose?: (task: TaskWithSubtasks) => void;
 }
 
 export function TaskList({

@@ -190,3 +190,27 @@ export function createSubtasksForTask(taskId: string, titles: string[]): Subtask
 
   return created;
 }
+
+export function listSubtasksForTaskIds(taskIds: string[]): Subtask[] {
+  if (taskIds.length === 0) {
+    return [];
+  }
+
+  const store = readStore();
+  const taskIdSet = new Set(taskIds);
+
+  return store.subtasks.filter((subtask) => taskIdSet.has(subtask.taskId));
+}
+
+export function deleteSubtask(id: string): boolean {
+  const store = readStore();
+  const nextLength = store.subtasks.length;
+  store.subtasks = store.subtasks.filter((subtask) => subtask.id !== id);
+
+  if (store.subtasks.length === nextLength) {
+    return false;
+  }
+
+  writeStore(store);
+  return true;
+}

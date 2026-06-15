@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { toggleSubtaskStatus } from '@/lib/repo/subtasks';
+import { toggleSubtaskStatus, deleteSubtask } from '@/lib/repo/subtasks';
 
 export const runtime = 'nodejs';
 
@@ -40,6 +40,30 @@ export async function PATCH(
     }
 
     return Response.json(subtask);
+  } catch (error) {
+    return serverError(error);
+  }
+}
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
+): Promise<Response> {
+  try {
+    const { id } = await params;
+    const subtaskId = parseSubtaskId(id);
+
+    if (subtaskId instanceof Response) {
+      return subtaskId;
+    }
+
+    const deleted = deleteSubtask(subtaskId);
+
+    if (!deleted) {
+      return Response.json({ error: 'Subtask not found' }, { status: 404 });
+    }
+
+    return new Response(null, { status: 204 });
   } catch (error) {
     return serverError(error);
   }

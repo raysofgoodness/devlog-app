@@ -120,3 +120,44 @@ export function createSubtasksForTask(taskId: string, titles: string[]): Subtask
     ? jsonStore.createSubtasksForTask(taskId, titles)
     : createSubtasksForTaskSqlite(taskId, titles);
 }
+
+function listSubtasksForTaskIdsSqlite(taskIds: string[]): Subtask[] {
+  if (taskIds.length === 0) {
+    return [];
+  }
+
+  const db = getDb();
+  const placeholders = taskIds.map((_, index) => `@id${index}`).join(', ');
+  const params = Object.fromEntries(
+    taskIds.map((id, index) => [`id${index}`, id]),
+  );
+
+  const stmt = db.prepare(
+    `SELECT id, task_id, title, status, created_at
+     FROM subtasks
+     WHERE task_id IN (${placeholders})
+     ORDER BY created_at ASC`,
+  );
+
+  const rows = stmt.all(params) as SubtaskRow[];
+  return rows.map(rowToSubtask);
+}
+
+function deleteSubtaskSqlite(id: string): boolean {
+  const db = getDb();
+  const stmt = db.prepare('DELETE FROM subtasks WHERE id = @id');
+  const result = stmt.run({ id });
+  return result.changes > 0;
+}
+
+export function listSubtasksForTaskIds(taskIds: string[]): Subtask[] {
+  return useJsonStore()
+    ? jsonStore.listSubtasksForTaskIds(taskIds)
+    : listSubtasksForTaskIdsSqlite(taskIds);
+}
+
+export function deleteSubtask(id: string): boolean {
+  return useJsonStore()
+    ? jsonStore.deleteSubtask(id)
+    : deleteSubtaskSqlite(id);
+}

@@ -1,6 +1,7 @@
 import { z, ZodError } from 'zod';
 
 import { deleteTask, getTask, updateTask } from '@/lib/repo/tasks';
+import { attachSubtasksToTask } from '@/lib/repo/task-with-subtasks';
 import { updateTaskSchema } from '@/lib/schema';
 
 export const runtime = 'nodejs';
@@ -47,7 +48,7 @@ export async function GET(
       return Response.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    return Response.json(task);
+    return Response.json(attachSubtasksToTask(task));
   } catch (error) {
     return serverError(error);
   }
@@ -73,7 +74,7 @@ export async function PATCH(
       return Response.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    return Response.json(task);
+    return Response.json(attachSubtasksToTask(task));
   } catch (error) {
     if (error instanceof ZodError) {
       return validationError(error);

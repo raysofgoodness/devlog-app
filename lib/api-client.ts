@@ -1,7 +1,9 @@
 import type {
   CreateTaskInput,
+  Subtask,
   Task,
   TaskStatus,
+  TaskWithSubtasks,
   UpdateTaskInput,
 } from '@/lib/schema';
 
@@ -21,6 +23,7 @@ export class ApiError extends Error {
 }
 
 const TASKS_BASE = '/api/tasks';
+const SUBTASKS_BASE = '/api/subtasks';
 
 async function parseResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -59,14 +62,16 @@ function buildTasksUrl(params?: ListTasksParams): string {
   return `${TASKS_BASE}?${searchParams.toString()}`;
 }
 
-export async function fetchTasks(params?: ListTasksParams): Promise<Task[]> {
+export async function fetchTasks(
+  params?: ListTasksParams,
+): Promise<TaskWithSubtasks[]> {
   const response = await fetch(buildTasksUrl(params));
-  return parseResponse<Task[]>(response);
+  return parseResponse<TaskWithSubtasks[]>(response);
 }
 
-export async function fetchTask(id: string): Promise<Task> {
+export async function fetchTask(id: string): Promise<TaskWithSubtasks> {
   const response = await fetch(`${TASKS_BASE}/${id}`);
-  return parseResponse<Task>(response);
+  return parseResponse<TaskWithSubtasks>(response);
 }
 
 export async function createTask(input: CreateTaskInput): Promise<Task> {
@@ -94,6 +99,22 @@ export async function updateTask(
 
 export async function deleteTask(id: string): Promise<void> {
   const response = await fetch(`${TASKS_BASE}/${id}`, {
+    method: 'DELETE',
+  });
+
+  await parseResponse<void>(response);
+}
+
+export async function toggleSubtask(id: string): Promise<Subtask> {
+  const response = await fetch(`${SUBTASKS_BASE}/${id}`, {
+    method: 'PATCH',
+  });
+
+  return parseResponse<Subtask>(response);
+}
+
+export async function deleteSubtask(id: string): Promise<void> {
+  const response = await fetch(`${SUBTASKS_BASE}/${id}`, {
     method: 'DELETE',
   });
 

@@ -4,8 +4,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   createTask,
+  deleteSubtask,
   deleteTask,
   fetchTasks,
+  toggleSubtask,
   updateTask,
   type ListTasksParams,
 } from '@/lib/api-client';
@@ -52,6 +54,28 @@ export function useDeleteTask() {
 
   return useMutation({
     mutationFn: (id: string) => deleteTask(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+    },
+  });
+}
+
+export function useToggleSubtask() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => toggleSubtask(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+    },
+  });
+}
+
+export function useDeleteSubtask() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => deleteSubtask(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },

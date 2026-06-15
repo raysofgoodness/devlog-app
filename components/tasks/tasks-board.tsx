@@ -1,33 +1,36 @@
-'use client';
+"use client";
 
-import { PlusIcon } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { PlusIcon } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { AgentsPanel } from '@/components/agents/agents-panel';
-import { DeleteConfirm } from '@/components/tasks/delete-confirm';
-import { TaskFilters } from '@/components/tasks/task-filters';
-import { TaskForm } from '@/components/tasks/task-form';
-import { TaskList } from '@/components/tasks/task-list';
-import { Button } from '@/components/ui/button';
-import {
-  useDeleteTask,
-  useTasks,
-} from '@/hooks/useTasks';
-import type { Task, TaskStatus } from '@/lib/schema';
-import type { SortOption, StatusFilter } from '@/lib/task-ui';
+import { AgentsPanel } from "@/components/agents/agents-panel";
+import { DeleteConfirm } from "@/components/tasks/delete-confirm";
+import { TaskFilters } from "@/components/tasks/task-filters";
+import { TaskForm } from "@/components/tasks/task-form";
+import { TaskList } from "@/components/tasks/task-list";
+import { Button } from "@/components/ui/button";
+import { useDeleteTask, useTasks } from "@/hooks/useTasks";
+import type { TaskStatus, TaskWithSubtasks } from "@/lib/schema";
+import type { SortOption, StatusFilter } from "@/lib/task-ui";
 
 export function TasksBoard() {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [sort, setSort] = useState<SortOption>('createdAt');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [sort, setSort] = useState<SortOption>("createdAt");
   const [formOpen, setFormOpen] = useState(false);
-  const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [editingTask, setEditingTask] = useState<Task | undefined>();
-  const [deletingTask, setDeletingTask] = useState<Task | null>(null);
-  const [decomposeTask, setDecomposeTask] = useState<Task | undefined>();
+  const [formMode, setFormMode] = useState<"create" | "edit">("create");
+  const [editingTask, setEditingTask] = useState<
+    TaskWithSubtasks | undefined
+  >();
+  const [deletingTask, setDeletingTask] = useState<TaskWithSubtasks | null>(
+    null,
+  );
+  const [decomposeTask, setDecomposeTask] = useState<
+    TaskWithSubtasks | undefined
+  >();
 
   const listParams = {
-    status: statusFilter === 'all' ? undefined : (statusFilter as TaskStatus),
+    status: statusFilter === "all" ? undefined : (statusFilter as TaskStatus),
     sort,
   };
 
@@ -36,22 +39,22 @@ export function TasksBoard() {
   const deleteTask = useDeleteTask();
 
   const openCreateForm = () => {
-    setFormMode('create');
+    setFormMode("create");
     setEditingTask(undefined);
     setFormOpen(true);
   };
 
-  const openEditForm = (task: Task) => {
-    setFormMode('edit');
+  const openEditForm = (task: TaskWithSubtasks) => {
+    setFormMode("edit");
     setEditingTask(task);
     setFormOpen(true);
   };
 
-  const openDeleteConfirm = (task: Task) => {
+  const openDeleteConfirm = (task: TaskWithSubtasks) => {
     setDeletingTask(task);
   };
 
-  const openDecompose = (task: Task) => {
+  const openDecompose = (task: TaskWithSubtasks) => {
     setDecomposeTask(task);
   };
 
@@ -62,13 +65,13 @@ export function TasksBoard() {
 
     try {
       await deleteTask.mutateAsync(deletingTask.id);
-      toast.success('Task deleted');
+      toast.success("Task deleted");
       setDeletingTask(null);
     } catch (deleteError) {
       const message =
         deleteError instanceof Error
           ? deleteError.message
-          : 'Could not delete task';
+          : "Could not delete task";
       toast.error(message);
     }
   };

@@ -5,6 +5,7 @@ import {
   listTasks,
   type ListTasksOptions,
 } from '@/lib/repo/tasks';
+import { attachSubtasksToTasks } from '@/lib/repo/task-with-subtasks';
 import { createTaskSchema, taskStatusSchema } from '@/lib/schema';
 
 export const runtime = 'nodejs';
@@ -44,7 +45,7 @@ export async function GET(request: Request): Promise<Response> {
       options.sort = sortParam as ListTasksOptions['sort'];
     }
 
-    const tasks = listTasks(options);
+    const tasks = attachSubtasksToTasks(listTasks(options));
     return Response.json(tasks);
   } catch (error) {
     if (error instanceof ZodError) {
