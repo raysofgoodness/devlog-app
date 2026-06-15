@@ -1,23 +1,17 @@
-import { ZodError } from "zod";
+import { ZodError } from 'zod';
 
-import { invalidParamResponse, parseUuidParam } from "@/lib/route-params";
-import { deleteTask, getTask, updateTask } from "@/lib/repo/tasks";
-import { attachSubtasksToTask } from "@/lib/repo/task-with-subtasks";
-import { updateTaskSchema } from "@/lib/schema";
+import {
+  jsonError,
+  parseJsonBody,
+  serverError,
+  validationError,
+} from '@/lib/api/http';
+import { invalidParamResponse, parseUuidParam } from '@/lib/route-params';
+import { deleteTask, getTask, updateTask } from '@/lib/repo/tasks';
+import { attachSubtasksToTask } from '@/lib/repo/task-with-subtasks';
+import { updateTaskSchema } from '@/lib/schema';
 
-export const runtime = "nodejs";
-
-function validationError(error: ZodError): Response {
-  return Response.json(
-    { error: "Validation failed", issues: error.issues },
-    { status: 400 },
-  );
-}
-
-function serverError(error: unknown): Response {
-  const message = error instanceof Error ? error.message : "Unexpected error";
-  return Response.json({ error: message }, { status: 500 });
-}
+export const runtime = 'nodejs';
 
 export async function GET(
   _request: Request,
@@ -28,13 +22,13 @@ export async function GET(
     const taskId = parseUuidParam(id);
 
     if (!taskId) {
-      return invalidParamResponse("task id");
+      return invalidParamResponse('task id');
     }
 
     const task = getTask(taskId);
 
     if (!task) {
-      return Response.json({ error: "Task not found" }, { status: 404 });
+      return jsonError('Task not found', 404);
     }
 
     return Response.json(attachSubtasksToTask(task));
@@ -52,19 +46,23 @@ export async function PATCH(
     const taskId = parseUuidParam(id);
 
     if (!taskId) {
-      return invalidParamResponse("task id");
+      return invalidParamResponse('task id');
     }
 
-    const body: unknown = await request.json();
+    const body = await parseJsonBody(request);
     const input = updateTaskSchema.parse(body);
     const task = updateTask(taskId, input);
 
     if (!task) {
-      return Response.json({ error: "Task not found" }, { status: 404 });
+      return jsonError('Task not found', 404);
     }
 
     return Response.json(attachSubtasksToTask(task));
   } catch (error) {
+    if (error instanceof SyntaxError) {
+      return jsonError('Invalid JSON body', 400);
+    }
+
     if (error instanceof ZodError) {
       return validationError(error);
     }
@@ -82,13 +80,13 @@ export async function DELETE(
     const taskId = parseUuidParam(id);
 
     if (!taskId) {
-      return invalidParamResponse("task id");
+      return invalidParamResponse('task id');
     }
 
     const deleted = deleteTask(taskId);
 
     if (!deleted) {
-      return Response.json({ error: "Task not found" }, { status: 404 });
+      return jsonError('Task not found', 404);
     }
 
     return new Response(null, { status: 204 });

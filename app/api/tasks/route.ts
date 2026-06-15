@@ -1,6 +1,12 @@
 import { ZodError } from 'zod';
 
 import {
+  jsonError,
+  parseJsonBody,
+  serverError,
+  validationError,
+} from '@/lib/api/http';
+import {
   createTask,
   listTasks,
   type ListTasksOptions,
@@ -11,18 +17,6 @@ import { createTaskSchema, taskStatusSchema } from '@/lib/schema';
 export const runtime = 'nodejs';
 
 const SORT_VALUES = ['priority', 'createdAt'] as const;
-
-function validationError(error: ZodError): Response {
-  return Response.json(
-    { error: 'Validation failed', issues: error.issues },
-    { status: 400 },
-  );
-}
-
-function serverError(error: unknown): Response {
-  const message = error instanceof Error ? error.message : 'Unexpected error';
-  return Response.json({ error: message }, { status: 500 });
-}
 
 export async function GET(request: Request): Promise<Response> {
   try {
@@ -37,10 +31,7 @@ export async function GET(request: Request): Promise<Response> {
     const sortParam = searchParams.get('sort');
     if (sortParam) {
       if (!SORT_VALUES.includes(sortParam as (typeof SORT_VALUES)[number])) {
-        return Response.json(
-          { error: 'Invalid sort. Use priority or createdAt.' },
-          { status: 400 },
-        );
+        return jsonError('Invalid sort. Use priority or createdAt.', 400);
       }
       options.sort = sortParam as ListTasksOptions['sort'];
     }
@@ -58,12 +49,16 @@ export async function GET(request: Request): Promise<Response> {
 
 export async function POST(request: Request): Promise<Response> {
   try {
-    const body: unknown = await request.json();
+    const body = await parseJsonBody(request);
     const input = createTaskSchema.parse(body);
     const task = createTask(input);
 
     return Response.json(task, { status: 201 });
   } catch (error) {
+    if (error instanceof SyntaxError) {
+      return jsonError('Invalid JSON body', 400);
+    }
+
     if (error instanceof ZodError) {
       return validationError(error);
     }

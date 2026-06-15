@@ -1,5 +1,11 @@
 import { ZodError, z } from 'zod';
 
+import {
+  jsonError,
+  parseJsonBody,
+  serverError,
+  validationError,
+} from '@/lib/api/http';
 import { decomposeTask } from '@/lib/ai/decompose';
 
 export const runtime = 'nodejs';
@@ -16,25 +22,9 @@ const decomposeRequestSchema = z
     path: ['subtasks'],
   });
 
-function validationError(error: ZodError): Response {
-  return Response.json(
-    { error: 'Validation failed', issues: error.issues },
-    { status: 400 },
-  );
-}
-
-function serverError(error: unknown): Response {
-  if (error instanceof Error && error.message === 'Task not found') {
-    return Response.json({ error: error.message }, { status: 404 });
-  }
-
-  const message = error instanceof Error ? error.message : 'Unexpected error';
-  return Response.json({ error: message }, { status: 500 });
-}
-
 export async function POST(request: Request): Promise<Response> {
   try {
-    const body: unknown = await request.json();
+    const body = await parseJsonBody(request);
     const input = decomposeRequestSchema.parse(body);
     const result = await decomposeTask({
       taskId: input.taskId,
@@ -45,8 +35,16 @@ export async function POST(request: Request): Promise<Response> {
 
     return Response.json(result);
   } catch (error) {
+    if (error instanceof SyntaxError) {
+      return jsonError('Invalid JSON body', 400);
+    }
+
     if (error instanceof ZodError) {
       return validationError(error);
+    }
+
+    if (error instanceof Error && error.message === 'Task not found') {
+      return jsonError(error.message, 404);
     }
 
     return serverError(error);

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { jsonError } from '@/lib/api/http';
+
 const uuidSchema = z.uuid();
 
 export function parseUuidParam(id: string): string | null {
@@ -8,5 +10,5 @@ export function parseUuidParam(id: string): string | null {
 }
 
 export function invalidParamResponse(label: string): Response {
-  return Response.json({ error: `Invalid ${label}` }, { status: 400 });
+  return jsonError(`Invalid ${label}`, 400);
 }
