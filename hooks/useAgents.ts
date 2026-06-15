@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   requestBriefing,
@@ -10,6 +10,7 @@ import {
   type DecomposeResponse,
   type PrioritizeResponse,
 } from '@/lib/agent-api-client';
+import { taskKeys } from '@/hooks/useTasks';
 
 export function usePrioritizeAgent() {
   return useMutation({
@@ -30,6 +31,8 @@ export function useBriefingAgent() {
 }
 
 export function useDecomposeAgent() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (input: {
       taskId: string;
@@ -37,6 +40,11 @@ export function useDecomposeAgent() {
       subtasks?: string[];
       answers?: string[];
     }) => requestDecompose(input),
+    onSuccess: (response) => {
+      if (response.kind === 'created') {
+        queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+      }
+    },
   });
 }
 
