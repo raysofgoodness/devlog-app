@@ -1,7 +1,11 @@
 import { formatISO } from 'date-fns';
 import { z } from 'zod';
 
-import { getLlmProviderConfig, getLanguageModel } from '@/lib/ai/provider';
+import {
+  getLanguageModel,
+  getLlmProviderConfig,
+  getLlmProviderOptions,
+} from '@/lib/ai/provider';
 import { createCreateSubtasksTool } from '@/lib/ai/tools';
 import { getTask } from '@/lib/repo/tasks';
 import type { Subtask, Task } from '@/lib/schema';
@@ -116,6 +120,7 @@ async function analyzeTaskClarity(
 
   const { output } = await generateText({
     model: getLanguageModel(),
+    providerOptions: getLlmProviderOptions(),
     system: CLASSIFY_SYSTEM,
     output: Output.object({ schema: claritySchema }),
     prompt: buildClassifyPrompt(task, answers),
