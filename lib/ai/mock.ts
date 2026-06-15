@@ -196,7 +196,7 @@ function buildDecomposeText(promptText: string, wantsJson: boolean): string {
 
     return JSON.stringify({
       isClear: true,
-      subtasks: [
+      proposedSubtasks: [
         'Clarify scope and acceptance criteria',
         'Implement the main workflow',
         'Add validation, tests, and documentation',

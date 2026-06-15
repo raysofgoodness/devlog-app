@@ -162,3 +162,31 @@ export function toggleSubtaskStatus(id: string): Subtask | null {
 
   return updated;
 }
+
+export function createSubtasksForTask(taskId: string, titles: string[]): Subtask[] {
+  const parent = getTask(taskId);
+
+  if (!parent) {
+    throw new Error('Task not found');
+  }
+
+  if (titles.length === 0) {
+    throw new Error('At least one subtask title is required');
+  }
+
+  const store = readStore();
+  const created = titles.map((title) =>
+    subtaskSchema.parse({
+      id: randomUUID(),
+      taskId,
+      title,
+      status: 'todo',
+      createdAt: formatISO(new Date()),
+    }),
+  );
+
+  store.subtasks.push(...created);
+  writeStore(store);
+
+  return created;
+}

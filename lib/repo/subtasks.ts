@@ -1,4 +1,8 @@
+import { randomUUID } from 'node:crypto';
+import { formatISO } from 'date-fns';
+
 import { getDb } from '@/lib/db';
+import { getTask } from '@/lib/repo/tasks';
 import * as jsonStore from '@/lib/repo/json-store';
 import {
   subtaskSchema,
@@ -63,4 +67,56 @@ export function toggleSubtaskStatus(id: string): Subtask | null {
   return useJsonStore()
     ? jsonStore.toggleSubtaskStatus(id)
     : toggleSubtaskStatusSqlite(id);
+}
+
+function createSubtasksForTaskSqlite(taskId: string, titles: string[]): Subtask[] {
+  const parent = getTask(taskId);
+
+  if (!parent) {
+    throw new Error('Task not found');
+  }
+
+  const db = getDb();
+  const insert = db.prepare(
+    `INSERT INTO subtasks (id, task_id, title, status, created_at)
+     VALUES (@id, @taskId, @title, @status, @createdAt)`,
+  );
+
+  const createMany = db.transaction((items: string[]) => {
+    const created: Subtask[] = [];
+
+    for (const title of items) {
+      const subtask = subtaskSchema.parse({
+        id: randomUUID(),
+        taskId,
+        title,
+        status: 'todo',
+        createdAt: formatISO(new Date()),
+      });
+
+      insert.run({
+        id: subtask.id,
+        taskId: subtask.taskId,
+        title: subtask.title,
+        status: subtask.status,
+        createdAt: subtask.createdAt,
+      });
+
+      created.push(subtask);
+    }
+
+    return created;
+  });
+
+  return createMany(titles);
+}
+
+export function createSubtasksForTask(taskId: string, titles: string[]): Subtask[] {
+  if (titles.length === 0) {
+    throw new Error('At least one subtask title is required');
+  }
+
+  return useJsonStore()
+    ? jsonStore.createSubtasksForTask(taskId, titles)
+    : createSubtasksForTaskSqlite(taskId, titles);
 }
