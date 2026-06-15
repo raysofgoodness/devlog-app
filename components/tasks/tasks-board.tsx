@@ -1,8 +1,6 @@
 "use client";
 
 import { PlusIcon } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
 
 import { AgentsPanel } from "@/components/agents/agents-panel";
 import { DeleteConfirm } from "@/components/tasks/delete-confirm";
@@ -10,69 +8,10 @@ import { TaskFilters } from "@/components/tasks/task-filters";
 import { TaskForm } from "@/components/tasks/task-form";
 import { TaskList } from "@/components/tasks/task-list";
 import { Button } from "@/components/ui/button";
-import { useDeleteTask, useTasks } from "@/hooks/useTasks";
-import type { TaskWithSubtasks } from "@/lib/schema";
-import type { SortOption, StatusFilter } from "@/lib/task-ui";
+import { useTasksBoardUi } from "@/hooks/useTasksBoardUi";
 
 export function TasksBoard() {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [sort, setSort] = useState<SortOption>("createdAt");
-  const [formOpen, setFormOpen] = useState(false);
-  const [formMode, setFormMode] = useState<"create" | "edit">("create");
-  const [editingTask, setEditingTask] = useState<
-    TaskWithSubtasks | undefined
-  >();
-  const [deletingTask, setDeletingTask] = useState<TaskWithSubtasks | null>(
-    null,
-  );
-  const [decomposeTask, setDecomposeTask] = useState<
-    TaskWithSubtasks | undefined
-  >();
-
-  const { data, isLoading, isError, error } = useTasks({ sort });
-  const filteredTasks =
-    statusFilter === "all"
-      ? data
-      : data?.filter((task) => task.status === statusFilter);
-  const deleteTask = useDeleteTask();
-
-  const openCreateForm = () => {
-    setFormMode("create");
-    setEditingTask(undefined);
-    setFormOpen(true);
-  };
-
-  const openEditForm = (task: TaskWithSubtasks) => {
-    setFormMode("edit");
-    setEditingTask(task);
-    setFormOpen(true);
-  };
-
-  const openDeleteConfirm = (task: TaskWithSubtasks) => {
-    setDeletingTask(task);
-  };
-
-  const openDecompose = (task: TaskWithSubtasks) => {
-    setDecomposeTask(task);
-  };
-
-  const handleDelete = async () => {
-    if (!deletingTask) {
-      return;
-    }
-
-    try {
-      await deleteTask.mutateAsync(deletingTask.id);
-      toast.success("Task deleted");
-      setDeletingTask(null);
-    } catch (deleteError) {
-      const message =
-        deleteError instanceof Error
-          ? deleteError.message
-          : "Could not delete task";
-      toast.error(message);
-    }
-  };
+  const board = useTasksBoardUi();
 
   return (
     <section className="flex flex-1 flex-col gap-6">
@@ -85,56 +24,58 @@ export function TasksBoard() {
             Filter, sort, and manage work in one place.
           </p>
         </div>
-        <Button onClick={openCreateForm} className="w-full sm:w-auto">
+        <Button onClick={board.openCreateForm} className="w-full sm:w-auto">
           <PlusIcon data-icon="inline-start" />
           New task
         </Button>
       </div>
 
       <AgentsPanel
-        tasks={data ?? []}
-        decomposeTask={decomposeTask}
+        tasks={board.tasks}
+        decomposeTask={board.decomposeTask}
         onDecomposeOpenChange={(open) => {
           if (!open) {
-            setDecomposeTask(undefined);
+            board.closeDecompose();
           }
         }}
       />
 
       <TaskFilters
-        status={statusFilter}
-        sort={sort}
-        onStatusChange={setStatusFilter}
-        onSortChange={setSort}
+        status={board.statusFilter}
+        sort={board.sort}
+        onStatusChange={board.setStatusFilter}
+        onSortChange={board.setSort}
       />
 
       <TaskList
-        tasks={filteredTasks}
-        isLoading={isLoading}
-        isError={isError}
-        errorMessage={error instanceof Error ? error.message : undefined}
-        onEdit={openEditForm}
-        onDelete={openDeleteConfirm}
-        onDecompose={openDecompose}
+        tasks={board.filteredTasks}
+        isLoading={board.isLoading}
+        isError={board.isError}
+        errorMessage={
+          board.error instanceof Error ? board.error.message : undefined
+        }
+        onEdit={board.openEditForm}
+        onDelete={board.openDeleteConfirm}
+        onDecompose={board.openDecompose}
       />
 
       <TaskForm
-        mode={formMode}
-        task={editingTask}
-        open={formOpen}
-        onOpenChange={setFormOpen}
+        mode={board.formMode}
+        task={board.editingTask}
+        open={board.formOpen}
+        onOpenChange={board.setFormOpen}
       />
 
       <DeleteConfirm
-        task={deletingTask}
-        open={deletingTask !== null}
-        isPending={deleteTask.isPending}
+        task={board.deletingTask}
+        open={board.deletingTask !== null}
+        isPending={board.deleteIsPending}
         onOpenChange={(open) => {
           if (!open) {
-            setDeletingTask(null);
+            board.closeDeleteConfirm();
           }
         }}
-        onConfirm={handleDelete}
+        onConfirm={board.handleDelete}
       />
     </section>
   );
