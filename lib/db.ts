@@ -60,8 +60,9 @@ export function getDb(): Database.Database {
     globalForDb.db = new Database(DB_PATH, { timeout: 5000 });
     globalForDb.db.pragma('journal_mode = WAL');
     globalForDb.db.pragma('foreign_keys = ON');
-    migrate(globalForDb.db);
   }
+
+  migrate(globalForDb.db);
 
   return globalForDb.db;
 }
