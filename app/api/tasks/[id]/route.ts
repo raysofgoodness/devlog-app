@@ -1,33 +1,22 @@
-import { z, ZodError } from 'zod';
+import { ZodError } from "zod";
 
-import { deleteTask, getTask, updateTask } from '@/lib/repo/tasks';
-import { attachSubtasksToTask } from '@/lib/repo/task-with-subtasks';
-import { updateTaskSchema } from '@/lib/schema';
+import { invalidParamResponse, parseUuidParam } from "@/lib/route-params";
+import { deleteTask, getTask, updateTask } from "@/lib/repo/tasks";
+import { attachSubtasksToTask } from "@/lib/repo/task-with-subtasks";
+import { updateTaskSchema } from "@/lib/schema";
 
-export const runtime = 'nodejs';
-
-const taskIdSchema = z.uuid();
+export const runtime = "nodejs";
 
 function validationError(error: ZodError): Response {
   return Response.json(
-    { error: 'Validation failed', issues: error.issues },
+    { error: "Validation failed", issues: error.issues },
     { status: 400 },
   );
 }
 
 function serverError(error: unknown): Response {
-  const message = error instanceof Error ? error.message : 'Unexpected error';
+  const message = error instanceof Error ? error.message : "Unexpected error";
   return Response.json({ error: message }, { status: 500 });
-}
-
-function parseTaskId(id: string): string | Response {
-  const result = taskIdSchema.safeParse(id);
-
-  if (!result.success) {
-    return Response.json({ error: 'Invalid task id' }, { status: 400 });
-  }
-
-  return result.data;
 }
 
 export async function GET(
@@ -36,16 +25,16 @@ export async function GET(
 ): Promise<Response> {
   try {
     const { id } = await params;
-    const taskId = parseTaskId(id);
+    const taskId = parseUuidParam(id);
 
-    if (taskId instanceof Response) {
-      return taskId;
+    if (!taskId) {
+      return invalidParamResponse("task id");
     }
 
     const task = getTask(taskId);
 
     if (!task) {
-      return Response.json({ error: 'Task not found' }, { status: 404 });
+      return Response.json({ error: "Task not found" }, { status: 404 });
     }
 
     return Response.json(attachSubtasksToTask(task));
@@ -60,10 +49,10 @@ export async function PATCH(
 ): Promise<Response> {
   try {
     const { id } = await params;
-    const taskId = parseTaskId(id);
+    const taskId = parseUuidParam(id);
 
-    if (taskId instanceof Response) {
-      return taskId;
+    if (!taskId) {
+      return invalidParamResponse("task id");
     }
 
     const body: unknown = await request.json();
@@ -71,7 +60,7 @@ export async function PATCH(
     const task = updateTask(taskId, input);
 
     if (!task) {
-      return Response.json({ error: 'Task not found' }, { status: 404 });
+      return Response.json({ error: "Task not found" }, { status: 404 });
     }
 
     return Response.json(attachSubtasksToTask(task));
@@ -90,16 +79,16 @@ export async function DELETE(
 ): Promise<Response> {
   try {
     const { id } = await params;
-    const taskId = parseTaskId(id);
+    const taskId = parseUuidParam(id);
 
-    if (taskId instanceof Response) {
-      return taskId;
+    if (!taskId) {
+      return invalidParamResponse("task id");
     }
 
     const deleted = deleteTask(taskId);
 
     if (!deleted) {
-      return Response.json({ error: 'Task not found' }, { status: 404 });
+      return Response.json({ error: "Task not found" }, { status: 404 });
     }
 
     return new Response(null, { status: 204 });

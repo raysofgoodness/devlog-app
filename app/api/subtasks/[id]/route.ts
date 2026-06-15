@@ -1,24 +1,11 @@
-import { z } from 'zod';
-
+import { invalidParamResponse, parseUuidParam } from '@/lib/route-params';
 import { toggleSubtaskStatus, deleteSubtask } from '@/lib/repo/subtasks';
 
 export const runtime = 'nodejs';
 
-const subtaskIdSchema = z.uuid();
-
 function serverError(error: unknown): Response {
   const message = error instanceof Error ? error.message : 'Unexpected error';
   return Response.json({ error: message }, { status: 500 });
-}
-
-function parseSubtaskId(id: string): string | Response {
-  const result = subtaskIdSchema.safeParse(id);
-
-  if (!result.success) {
-    return Response.json({ error: 'Invalid subtask id' }, { status: 400 });
-  }
-
-  return result.data;
 }
 
 export async function PATCH(
@@ -27,10 +14,10 @@ export async function PATCH(
 ): Promise<Response> {
   try {
     const { id } = await params;
-    const subtaskId = parseSubtaskId(id);
+    const subtaskId = parseUuidParam(id);
 
-    if (subtaskId instanceof Response) {
-      return subtaskId;
+    if (!subtaskId) {
+      return invalidParamResponse('subtask id');
     }
 
     const subtask = toggleSubtaskStatus(subtaskId);
@@ -51,10 +38,10 @@ export async function DELETE(
 ): Promise<Response> {
   try {
     const { id } = await params;
-    const subtaskId = parseSubtaskId(id);
+    const subtaskId = parseUuidParam(id);
 
-    if (subtaskId instanceof Response) {
-      return subtaskId;
+    if (!subtaskId) {
+      return invalidParamResponse('subtask id');
     }
 
     const deleted = deleteSubtask(subtaskId);
