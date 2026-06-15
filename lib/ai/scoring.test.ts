@@ -55,4 +55,11 @@ describe('scoreTask', () => {
     expect(first).toBe(second);
     expect(first).toBeGreaterThan(0);
   });
+
+  it('caps age bonus at 30 days', () => {
+    const ancient = task({ createdAt: '2025-01-01T10:00:00+03:00' });
+    const capped = task({ createdAt: '2026-05-01T10:00:00+03:00' });
+
+    expect(scoreTask(ancient, { now: NOW })).toBe(scoreTask(capped, { now: NOW }));
+  });
 });

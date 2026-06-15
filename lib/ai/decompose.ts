@@ -74,7 +74,7 @@ function buildClassifyPrompt(task: Task, answers?: string[]): string {
   return lines.join('\n');
 }
 
-function normalizeClarityOutput(output: z.infer<typeof claritySchema>) {
+export function normalizeClarityOutput(output: z.infer<typeof claritySchema>) {
   if (!output.isClear) {
     const questions = output.questions?.filter(Boolean) ?? [];
 

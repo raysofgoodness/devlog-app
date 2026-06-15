@@ -1,11 +1,11 @@
-import { ListTodoIcon } from 'lucide-react';
+import { ListTodoIcon } from "lucide-react";
 
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 
 export function TaskListEmpty() {
   return (
@@ -15,7 +15,7 @@ export function TaskListEmpty() {
           <ListTodoIcon />
         </div>
         <CardTitle>No tasks yet</CardTitle>
-        <CardDescription className="max-w-sm">
+        <CardDescription className="max-w-sm mx-auto">
           Create your first task to start tracking work. Filters may also hide
           matching items.
         </CardDescription>

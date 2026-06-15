@@ -24,6 +24,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useDecomposeAgent, type DecomposeResponse } from "@/hooks/useAgents";
+import { parseAnswerLines } from "@/lib/ai/parse-answers";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/schema";
 
@@ -32,13 +33,6 @@ interface DecomposeDialogProps {
   onOpenChange: (open: boolean) => void;
   tasks: Task[];
   initialTask?: Task;
-}
-
-function parseAnswers(raw: string): string[] {
-  return raw
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
 }
 
 export function DecomposeDialog({
@@ -125,7 +119,7 @@ export function DecomposeDialog({
   };
 
   const handleSubmitAnswers = async () => {
-    const answers = parseAnswers(answersText);
+    const answers = parseAnswerLines(answersText);
 
     if (answers.length === 0) {
       toast.error("Add at least one answer");
