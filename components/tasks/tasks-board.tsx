@@ -4,6 +4,7 @@ import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { AgentsPanel } from '@/components/agents/agents-panel';
 import { DeleteConfirm } from '@/components/tasks/delete-confirm';
 import { TaskFilters } from '@/components/tasks/task-filters';
 import { TaskForm } from '@/components/tasks/task-form';
@@ -23,6 +24,7 @@ export function TasksBoard() {
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [editingTask, setEditingTask] = useState<Task | undefined>();
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
+  const [decomposeTask, setDecomposeTask] = useState<Task | undefined>();
 
   const listParams = {
     status: statusFilter === 'all' ? undefined : (statusFilter as TaskStatus),
@@ -30,6 +32,7 @@ export function TasksBoard() {
   };
 
   const { data, isLoading, isError, error } = useTasks(listParams);
+  const { data: allTasks } = useTasks({ sort });
   const deleteTask = useDeleteTask();
 
   const openCreateForm = () => {
@@ -46,6 +49,10 @@ export function TasksBoard() {
 
   const openDeleteConfirm = (task: Task) => {
     setDeletingTask(task);
+  };
+
+  const openDecompose = (task: Task) => {
+    setDecomposeTask(task);
   };
 
   const handleDelete = async () => {
@@ -83,6 +90,16 @@ export function TasksBoard() {
         </Button>
       </div>
 
+      <AgentsPanel
+        tasks={allTasks ?? []}
+        decomposeTask={decomposeTask}
+        onDecomposeOpenChange={(open) => {
+          if (!open) {
+            setDecomposeTask(undefined);
+          }
+        }}
+      />
+
       <TaskFilters
         status={statusFilter}
         sort={sort}
@@ -97,6 +114,7 @@ export function TasksBoard() {
         errorMessage={error instanceof Error ? error.message : undefined}
         onEdit={openEditForm}
         onDelete={openDeleteConfirm}
+        onDecompose={openDecompose}
       />
 
       <TaskForm

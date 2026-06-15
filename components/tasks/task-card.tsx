@@ -1,7 +1,7 @@
 'use client';
 
 import { format, parseISO } from 'date-fns';
-import { PencilIcon, Trash2Icon } from 'lucide-react';
+import { ListTreeIcon, PencilIcon, Trash2Icon } from 'lucide-react';
 
 import { TaskPriorityBadge } from '@/components/tasks/task-priority-badge';
 import { TaskStatusBadge } from '@/components/tasks/task-status-badge';
@@ -20,9 +20,15 @@ interface TaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
+  onDecompose?: (task: Task) => void;
 }
 
-export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
+export function TaskCard({
+  task,
+  onEdit,
+  onDelete,
+  onDecompose,
+}: TaskCardProps) {
   const createdLabel = format(parseISO(task.createdAt), 'MMM d, yyyy');
 
   return (
@@ -46,7 +52,18 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
         </p>
       </CardContent>
 
-      <CardFooter className="gap-2 border-t bg-muted/30">
+      <CardFooter className="flex-wrap gap-2 border-t bg-muted/30">
+        {onDecompose && task.status !== 'done' ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onDecompose(task)}
+            aria-label={`Decompose ${task.title}`}
+          >
+            <ListTreeIcon data-icon="inline-start" />
+            Split
+          </Button>
+        ) : null}
         <Button
           variant="outline"
           size="sm"

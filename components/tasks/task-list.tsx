@@ -18,6 +18,7 @@ interface TaskListProps {
   errorMessage?: string;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
+  onDecompose?: (task: Task) => void;
 }
 
 export function TaskList({
@@ -27,6 +28,7 @@ export function TaskList({
   errorMessage,
   onEdit,
   onDelete,
+  onDecompose,
 }: TaskListProps) {
   if (isLoading) {
     return <TaskListSkeleton />;
@@ -53,7 +55,12 @@ export function TaskList({
     <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {tasks.map((task) => (
         <li key={task.id}>
-          <TaskCard task={task} onEdit={onEdit} onDelete={onDelete} />
+          <TaskCard
+            task={task}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onDecompose={onDecompose}
+          />
         </li>
       ))}
     </ul>
