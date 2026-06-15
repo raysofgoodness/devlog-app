@@ -39,6 +39,13 @@ export const updateTaskSchema = z
     message: 'At least one field is required',
   });
 
+export const taskFormSchema = z.object({
+  title: z.string().trim().min(1, 'Title is required').max(200),
+  description: z.string().trim().max(5000),
+  status: taskStatusSchema,
+  priority: taskPrioritySchema,
+});
+
 export type TaskStatus = z.infer<typeof taskStatusSchema>;
 export type TaskPriority = z.infer<typeof taskPrioritySchema>;
 export type SubtaskStatus = z.infer<typeof subtaskStatusSchema>;
@@ -46,3 +53,4 @@ export type Task = z.infer<typeof taskSchema>;
 export type Subtask = z.infer<typeof subtaskSchema>;
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
+export type TaskFormValues = z.infer<typeof taskFormSchema>;
