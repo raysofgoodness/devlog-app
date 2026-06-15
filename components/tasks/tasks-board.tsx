@@ -11,7 +11,7 @@ import { TaskForm } from "@/components/tasks/task-form";
 import { TaskList } from "@/components/tasks/task-list";
 import { Button } from "@/components/ui/button";
 import { useDeleteTask, useTasks } from "@/hooks/useTasks";
-import type { TaskStatus, TaskWithSubtasks } from "@/lib/schema";
+import type { TaskWithSubtasks } from "@/lib/schema";
 import type { SortOption, StatusFilter } from "@/lib/task-ui";
 
 export function TasksBoard() {
@@ -29,13 +29,11 @@ export function TasksBoard() {
     TaskWithSubtasks | undefined
   >();
 
-  const listParams = {
-    status: statusFilter === "all" ? undefined : (statusFilter as TaskStatus),
-    sort,
-  };
-
-  const { data, isLoading, isError, error } = useTasks(listParams);
-  const { data: allTasks } = useTasks({ sort });
+  const { data, isLoading, isError, error } = useTasks({ sort });
+  const filteredTasks =
+    statusFilter === "all"
+      ? data
+      : data?.filter((task) => task.status === statusFilter);
   const deleteTask = useDeleteTask();
 
   const openCreateForm = () => {
@@ -94,7 +92,7 @@ export function TasksBoard() {
       </div>
 
       <AgentsPanel
-        tasks={allTasks ?? []}
+        tasks={data ?? []}
         decomposeTask={decomposeTask}
         onDecomposeOpenChange={(open) => {
           if (!open) {
@@ -111,7 +109,7 @@ export function TasksBoard() {
       />
 
       <TaskList
-        tasks={data}
+        tasks={filteredTasks}
         isLoading={isLoading}
         isError={isError}
         errorMessage={error instanceof Error ? error.message : undefined}
