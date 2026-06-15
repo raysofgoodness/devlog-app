@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { CalendarDaysIcon, ListTreeIcon, SunriseIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { CalendarDaysIcon, ListTreeIcon, SunriseIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-import { BriefingDialog } from "@/components/agents/briefing-dialog";
-import { DecomposeDialog } from "@/components/agents/decompose-dialog";
-import { PrioritizeDialog } from "@/components/agents/prioritize-dialog";
-import { Button } from "@/components/ui/button";
+import { BriefingDialog } from '@/components/agents/briefing-dialog';
+import { DecomposeDialog } from '@/components/agents/decompose-dialog';
+import { PrioritizeDialog } from '@/components/agents/prioritize-dialog';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import type { Task } from "@/lib/schema";
+} from '@/components/ui/card';
+import type { Task } from '@/lib/schema';
 
 interface AgentsPanelProps {
   tasks: Task[];

@@ -16,7 +16,12 @@ function nextMockId(prefix: string): string {
 }
 
 const MOCK_USAGE: LanguageModelV3GenerateResult['usage'] = {
-  inputTokens: { total: 128, noCache: 128, cacheRead: undefined, cacheWrite: undefined },
+  inputTokens: {
+    total: 128,
+    noCache: 128,
+    cacheRead: undefined,
+    cacheWrite: undefined,
+  },
   outputTokens: { total: 256, text: 256, reasoning: undefined },
 };
 
@@ -47,7 +52,9 @@ function extractPromptText(prompt: LanguageModelV3Prompt): string {
     }
 
     const content =
-      message.role === 'assistant' || message.role === 'tool' ? message.content : [];
+      message.role === 'assistant' || message.role === 'tool'
+        ? message.content
+        : [];
 
     for (const part of content) {
       if (part.type === 'text') {
@@ -86,7 +93,12 @@ function getCompletedToolNames(prompt: LanguageModelV3Prompt): Set<string> {
   return names;
 }
 
-type MockScenario = 'prioritize' | 'decompose' | 'briefing' | 'status' | 'generic';
+type MockScenario =
+  | 'prioritize'
+  | 'decompose'
+  | 'briefing'
+  | 'status'
+  | 'generic';
 
 function detectScenario(text: string): MockScenario {
   const normalized = text.toLowerCase();
@@ -129,7 +141,10 @@ function detectScenario(text: string): MockScenario {
   return 'generic';
 }
 
-function mockToolInput(toolName: string, promptText: string): Record<string, unknown> {
+function mockToolInput(
+  toolName: string,
+  promptText: string,
+): Record<string, unknown> {
   const hash = hashString(`${toolName}:${promptText}`);
 
   switch (toolName) {
@@ -280,13 +295,18 @@ function buildTextResponse(
   }
 }
 
-function buildGenerateResult(options: LanguageModelV3CallOptions): LanguageModelV3GenerateResult {
+function buildGenerateResult(
+  options: LanguageModelV3CallOptions,
+): LanguageModelV3GenerateResult {
   const promptText = extractPromptText(options.prompt);
   const scenario = detectScenario(promptText);
   const wantsJson = options.responseFormat?.type === 'json';
   const completedTools = getCompletedToolNames(options.prompt);
-  const availableTools = options.tools?.filter((tool) => tool.type === 'function') ?? [];
-  const pendingTools = availableTools.filter((tool) => !completedTools.has(tool.name));
+  const availableTools =
+    options.tools?.filter((tool) => tool.type === 'function') ?? [];
+  const pendingTools = availableTools.filter(
+    (tool) => !completedTools.has(tool.name),
+  );
 
   if (pendingTools.length > 0) {
     const toolCalls = pendingTools.map((tool) => ({
@@ -314,19 +334,29 @@ function buildGenerateResult(options: LanguageModelV3CallOptions): LanguageModel
   };
 }
 
-function buildStreamResult(options: LanguageModelV3CallOptions): LanguageModelV3StreamResult {
+function buildStreamResult(
+  options: LanguageModelV3CallOptions,
+): LanguageModelV3StreamResult {
   const generated = buildGenerateResult(options);
   const text = generated.content
-    .filter((part): part is { type: 'text'; text: string } => part.type === 'text')
+    .filter(
+      (part): part is { type: 'text'; text: string } => part.type === 'text',
+    )
     .map((part) => part.text)
     .join('');
 
   const toolCalls = generated.content.filter(
-    (part): part is Extract<(typeof generated.content)[number], { type: 'tool-call' }> =>
-      part.type === 'tool-call',
+    (
+      part,
+    ): part is Extract<
+      (typeof generated.content)[number],
+      { type: 'tool-call' }
+    > => part.type === 'tool-call',
   );
 
-  const chunks: LanguageModelV3StreamPart[] = [{ type: 'stream-start', warnings: [] }];
+  const chunks: LanguageModelV3StreamPart[] = [
+    { type: 'stream-start', warnings: [] },
+  ];
 
   if (toolCalls.length > 0) {
     for (const call of toolCalls) {
@@ -336,7 +366,11 @@ function buildStreamResult(options: LanguageModelV3CallOptions): LanguageModelV3
     const textId = nextMockId('text');
     chunks.push({ type: 'text-start', id: textId });
     for (let i = 0; i < text.length; i += 24) {
-      chunks.push({ type: 'text-delta', id: textId, delta: text.slice(i, i + 24) });
+      chunks.push({
+        type: 'text-delta',
+        id: textId,
+        delta: text.slice(i, i + 24),
+      });
     }
     chunks.push({ type: 'text-end', id: textId });
   }
@@ -348,7 +382,11 @@ function buildStreamResult(options: LanguageModelV3CallOptions): LanguageModelV3
   });
 
   return {
-    stream: simulateReadableStream({ chunks, initialDelayInMs: null, chunkDelayInMs: null }),
+    stream: simulateReadableStream({
+      chunks,
+      initialDelayInMs: null,
+      chunkDelayInMs: null,
+    }),
   };
 }
 

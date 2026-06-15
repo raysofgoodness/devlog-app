@@ -48,8 +48,4 @@ export function useDecomposeAgent() {
   });
 }
 
-export type {
-  BriefingResponse,
-  DecomposeResponse,
-  PrioritizeResponse,
-};
+export type { BriefingResponse, DecomposeResponse, PrioritizeResponse };

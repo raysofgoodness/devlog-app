@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { PlusIcon } from "lucide-react";
+import { PlusIcon } from 'lucide-react';
 
-import { AgentsPanel } from "@/components/agents/agents-panel";
-import { DeleteConfirm } from "@/components/tasks/delete-confirm";
-import { TaskFilters } from "@/components/tasks/task-filters";
-import { TaskForm } from "@/components/tasks/task-form";
-import { TaskList } from "@/components/tasks/task-list";
-import { Button } from "@/components/ui/button";
-import { useTasksBoardUi } from "@/hooks/useTasksBoardUi";
+import { AgentsPanel } from '@/components/agents/agents-panel';
+import { DeleteConfirm } from '@/components/tasks/delete-confirm';
+import { TaskFilters } from '@/components/tasks/task-filters';
+import { TaskForm } from '@/components/tasks/task-form';
+import { TaskList } from '@/components/tasks/task-list';
+import { Button } from '@/components/ui/button';
+import { useTasksBoardUi } from '@/hooks/useTasksBoardUi';
 
 export function TasksBoard() {
   const board = useTasksBoardUi();

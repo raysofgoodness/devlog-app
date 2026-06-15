@@ -29,11 +29,17 @@ function resolveNow(options?: ScoreTaskOptions): Date {
 }
 
 function ageBonus(createdAt: string, now: Date): number {
-  const ageDays = Math.max(0, differenceInCalendarDays(now, parseISO(createdAt)));
+  const ageDays = Math.max(
+    0,
+    differenceInCalendarDays(now, parseISO(createdAt)),
+  );
   return Math.min(ageDays * AGE_BONUS_PER_DAY, MAX_AGE_BONUS);
 }
 
-export function scoreTask(task: ScoreableTask, options?: ScoreTaskOptions): number {
+export function scoreTask(
+  task: ScoreableTask,
+  options?: ScoreTaskOptions,
+): number {
   const now = resolveNow(options);
 
   return (

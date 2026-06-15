@@ -14,7 +14,11 @@ const decomposeRequestSchema = z
   .object({
     taskId: z.uuid(),
     confirm: z.boolean().optional().default(false),
-    subtasks: z.array(z.string().trim().min(1).max(200)).min(1).max(20).optional(),
+    subtasks: z
+      .array(z.string().trim().min(1).max(200))
+      .min(1)
+      .max(20)
+      .optional(),
     answers: z.array(z.string().trim().min(1).max(2000)).max(10).optional(),
   })
   .refine((data) => !data.confirm || Boolean(data.subtasks?.length), {

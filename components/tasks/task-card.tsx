@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { format, parseISO } from "date-fns";
-import { ListTreeIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
-import { toast } from "sonner";
+import { format, parseISO } from 'date-fns';
+import { ListTreeIcon, PencilIcon, Trash2Icon, XIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
-import { TaskPriorityBadge } from "@/components/tasks/task-priority-badge";
-import { TaskStatusBadge } from "@/components/tasks/task-status-badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { TaskPriorityBadge } from '@/components/tasks/task-priority-badge';
+import { TaskStatusBadge } from '@/components/tasks/task-status-badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Card,
   CardContent,
@@ -15,11 +15,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { useDeleteSubtask, useToggleSubtask } from "@/hooks/useTasks";
-import { cn } from "@/lib/utils";
-import type { TaskWithSubtasks } from "@/lib/schema";
+} from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { useDeleteSubtask, useToggleSubtask } from '@/hooks/useTasks';
+import { cn } from '@/lib/utils';
+import type { TaskWithSubtasks } from '@/lib/schema';
 
 interface TaskCardProps {
   task: TaskWithSubtasks;
@@ -36,9 +36,9 @@ export function TaskCard({
 }: TaskCardProps) {
   const toggleSubtask = useToggleSubtask();
   const deleteSubtask = useDeleteSubtask();
-  const createdLabel = format(parseISO(task.createdAt), "MMM d, yyyy");
+  const createdLabel = format(parseISO(task.createdAt), 'MMM d, yyyy');
   const subtasks = task.subtasks ?? [];
-  const doneSubtasks = subtasks.filter((subtask) => subtask.status === "done");
+  const doneSubtasks = subtasks.filter((subtask) => subtask.status === 'done');
   const progressValue =
     subtasks.length > 0
       ? Math.round((doneSubtasks.length / subtasks.length) * 100)
@@ -49,7 +49,7 @@ export function TaskCard({
       await toggleSubtask.mutateAsync(subtaskId);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Could not update subtask";
+        error instanceof Error ? error.message : 'Could not update subtask';
       toast.error(message);
     }
   };
@@ -59,7 +59,7 @@ export function TaskCard({
       await deleteSubtask.mutateAsync(subtaskId);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Could not delete subtask";
+        error instanceof Error ? error.message : 'Could not delete subtask';
       toast.error(message);
     }
   };
@@ -93,7 +93,7 @@ export function TaskCard({
         {subtasks.length > 0 ? (
           <ul className="space-y-2 rounded-lg border bg-muted/20 p-3">
             {subtasks.map((subtask) => {
-              const isDone = subtask.status === "done";
+              const isDone = subtask.status === 'done';
               const isToggling =
                 toggleSubtask.isPending &&
                 toggleSubtask.variables === subtask.id;
@@ -110,12 +110,12 @@ export function TaskCard({
                     onCheckedChange={() => {
                       void handleToggleSubtask(subtask.id);
                     }}
-                    aria-label={`Mark "${subtask.title}" as ${isDone ? "todo" : "done"}`}
+                    aria-label={`Mark "${subtask.title}" as ${isDone ? 'todo' : 'done'}`}
                   />
                   <span
                     className={cn(
-                      "min-w-0 flex-1 pt-0.5 text-sm leading-snug",
-                      isDone && "text-muted-foreground line-through",
+                      'min-w-0 flex-1 pt-0.5 text-sm leading-snug',
+                      isDone && 'text-muted-foreground line-through',
                     )}
                   >
                     {subtask.title}
@@ -145,7 +145,7 @@ export function TaskCard({
       </CardContent>
 
       <CardFooter className="mt-auto flex-wrap gap-2 border-t bg-muted/30">
-        {onDecompose && task.status !== "done" ? (
+        {onDecompose && task.status !== 'done' ? (
           <Button
             variant="outline"
             size="sm"

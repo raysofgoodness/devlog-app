@@ -15,10 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
-import {
-  useBriefingAgent,
-  type BriefingResponse,
-} from '@/hooks/useAgents';
+import { useBriefingAgent, type BriefingResponse } from '@/hooks/useAgents';
 
 interface BriefingDialogProps {
   open: boolean;
@@ -59,7 +56,8 @@ export function BriefingDialog({ open, onOpenChange }: BriefingDialogProps) {
             {result ? <AgentMockBadge isMock={result.isMock} /> : null}
           </div>
           <DialogDescription>
-            Multi-step agent: prioritize, stale tasks, and a draft status update.
+            Multi-step agent: prioritize, stale tasks, and a draft status
+            update.
           </DialogDescription>
         </DialogHeader>
 

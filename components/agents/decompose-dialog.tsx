@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
-import { AgentMockBadge } from "@/components/agents/agent-mock-badge";
-import { Button } from "@/components/ui/button";
+import { AgentMockBadge } from '@/components/agents/agent-mock-badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -12,21 +12,21 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Field, FieldLabel } from "@/components/ui/field";
+} from '@/components/ui/dialog';
+import { Field, FieldLabel } from '@/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
-} from "@/components/ui/select";
-import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
-import { useDecomposeAgent, type DecomposeResponse } from "@/hooks/useAgents";
-import { parseAnswerLines } from "@/lib/ai/parse-answers";
-import { cn } from "@/lib/utils";
-import type { Task } from "@/lib/schema";
+} from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
+import { Textarea } from '@/components/ui/textarea';
+import { useDecomposeAgent, type DecomposeResponse } from '@/hooks/useAgents';
+import { parseAnswerLines } from '@/lib/ai/parse-answers';
+import { cn } from '@/lib/utils';
+import type { Task } from '@/lib/schema';
 
 interface DecomposeDialogProps {
   open: boolean;
@@ -42,20 +42,20 @@ export function DecomposeDialog({
   initialTask,
 }: DecomposeDialogProps) {
   const decompose = useDecomposeAgent();
-  const [taskId, setTaskId] = useState<string>("");
+  const [taskId, setTaskId] = useState<string>('');
   const [result, setResult] = useState<DecomposeResponse | null>(null);
-  const [answersText, setAnswersText] = useState("");
+  const [answersText, setAnswersText] = useState('');
 
   useEffect(() => {
     if (!open) {
       setResult(null);
-      setAnswersText("");
-      setTaskId("");
+      setAnswersText('');
+      setTaskId('');
     }
   }, [open]);
 
   const selectableTasks = useMemo(() => {
-    const active = tasks.filter((task) => task.status !== "done");
+    const active = tasks.filter((task) => task.status !== 'done');
 
     if (initialTask && !active.some((task) => task.id === initialTask.id)) {
       return [initialTask, ...active];
@@ -66,19 +66,18 @@ export function DecomposeDialog({
 
   const effectiveTaskId =
     taskId ||
-    (open && initialTask ? initialTask.id : "") ||
+    (open && initialTask ? initialTask.id : '') ||
     selectableTasks[0]?.id ||
-    "";
+    '';
 
   const selectedTask =
-    selectableTasks.find((task) => task.id === effectiveTaskId) ??
-    initialTask;
+    selectableTasks.find((task) => task.id === effectiveTaskId) ?? initialTask;
 
   const runAnalyze = async (answers?: string[]) => {
     const id = effectiveTaskId;
 
     if (!id) {
-      toast.error("Select a task first");
+      toast.error('Select a task first');
       return;
     }
 
@@ -90,13 +89,13 @@ export function DecomposeDialog({
       setResult(response);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Could not analyze task";
+        error instanceof Error ? error.message : 'Could not analyze task';
       toast.error(message);
     }
   };
 
   const handleCreateSubtasks = async () => {
-    if (result?.kind !== "proposal") {
+    if (result?.kind !== 'proposal') {
       return;
     }
 
@@ -107,13 +106,13 @@ export function DecomposeDialog({
         subtasks: result.proposedSubtasks,
       });
 
-      if (response.kind === "created") {
+      if (response.kind === 'created') {
         setResult(response);
         toast.success(`Created ${response.subtasks.length} subtasks`);
       }
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Could not create subtasks";
+        error instanceof Error ? error.message : 'Could not create subtasks';
       toast.error(message);
     }
   };
@@ -122,7 +121,7 @@ export function DecomposeDialog({
     const answers = parseAnswerLines(answersText);
 
     if (answers.length === 0) {
-      toast.error("Add at least one answer");
+      toast.error('Add at least one answer');
       return;
     }
 
@@ -152,16 +151,16 @@ export function DecomposeDialog({
                   setTaskId(value);
                 }
               }}
-              disabled={decompose.isPending || result?.kind === "created"}
+              disabled={decompose.isPending || result?.kind === 'created'}
             >
               <SelectTrigger id="decompose-task" className="w-full">
                 <span
                   className={cn(
-                    "flex flex-1 truncate text-left",
-                    !selectedTask && "text-muted-foreground",
+                    'flex flex-1 truncate text-left',
+                    !selectedTask && 'text-muted-foreground',
                   )}
                 >
-                  {selectedTask?.title ?? "Select a task"}
+                  {selectedTask?.title ?? 'Select a task'}
                 </span>
               </SelectTrigger>
               <SelectContent>
@@ -176,7 +175,7 @@ export function DecomposeDialog({
             </Select>
           </Field>
 
-          {result?.kind === "questions" ? (
+          {result?.kind === 'questions' ? (
             <div className="space-y-3 rounded-lg border p-4">
               <p className="text-sm font-medium">
                 Clarifying questions for &ldquo;{result.taskTitle}&rdquo;
@@ -201,7 +200,7 @@ export function DecomposeDialog({
             </div>
           ) : null}
 
-          {result?.kind === "proposal" ? (
+          {result?.kind === 'proposal' ? (
             <div className="space-y-3 rounded-lg border p-4">
               <p className="text-sm font-medium">
                 Proposed subtasks for &ldquo;{result.taskTitle}&rdquo;
@@ -214,7 +213,7 @@ export function DecomposeDialog({
             </div>
           ) : null}
 
-          {result?.kind === "created" ? (
+          {result?.kind === 'created' ? (
             <div className="space-y-3 rounded-lg border border-primary/30 bg-primary/5 p-4">
               <p className="text-sm font-medium">
                 Created {result.subtasks.length} subtasks for &ldquo;
@@ -240,7 +239,7 @@ export function DecomposeDialog({
             Close
           </Button>
 
-          {result?.kind === "questions" ? (
+          {result?.kind === 'questions' ? (
             <Button
               type="button"
               onClick={handleSubmitAnswers}
@@ -253,7 +252,7 @@ export function DecomposeDialog({
             </Button>
           ) : null}
 
-          {result?.kind === "proposal" ? (
+          {result?.kind === 'proposal' ? (
             <Button
               type="button"
               onClick={handleCreateSubtasks}
@@ -266,7 +265,7 @@ export function DecomposeDialog({
             </Button>
           ) : null}
 
-          {result?.kind !== "questions" && result?.kind !== "proposal" ? (
+          {result?.kind !== 'questions' && result?.kind !== 'proposal' ? (
             <Button
               type="button"
               onClick={() => runAnalyze()}
@@ -275,7 +274,7 @@ export function DecomposeDialog({
               {decompose.isPending ? (
                 <Spinner data-icon="inline-start" />
               ) : null}
-              {result?.kind === "created" ? "Analyze again" : "Analyze task"}
+              {result?.kind === 'created' ? 'Analyze again' : 'Analyze task'}
             </Button>
           ) : null}
         </DialogFooter>

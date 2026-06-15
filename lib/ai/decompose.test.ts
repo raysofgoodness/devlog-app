@@ -74,8 +74,14 @@ describe('normalizeClarityOutput', () => {
 describe('parseAnswerLines', () => {
   it('splits multiline answers and trims whitespace', () => {
     expect(
-      parseAnswerLines('  Deliverable is an API route \n\nDeadline Friday \r\nDone = merged PR  '),
-    ).toEqual(['Deliverable is an API route', 'Deadline Friday', 'Done = merged PR']);
+      parseAnswerLines(
+        '  Deliverable is an API route \n\nDeadline Friday \r\nDone = merged PR  ',
+      ),
+    ).toEqual([
+      'Deliverable is an API route',
+      'Deadline Friday',
+      'Done = merged PR',
+    ]);
   });
 
   it('returns an empty array for blank input', () => {

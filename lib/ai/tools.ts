@@ -15,7 +15,11 @@ export const detectStaleToolInputSchema = z.object({
   staleDays: z.number().int().min(1).max(90).optional().default(3),
 });
 
-export const statusUpdateToneSchema = z.enum(['professional', 'casual', 'concise']);
+export const statusUpdateToneSchema = z.enum([
+  'professional',
+  'casual',
+  'concise',
+]);
 
 export const draftStatusUpdateToolInputSchema = z.object({
   taskId: z.uuid().optional(),
@@ -72,7 +76,10 @@ export function detectStaleTasks(
     }));
 }
 
-function draftStatusText(task: Task, tone: z.infer<typeof statusUpdateToneSchema>): string {
+function draftStatusText(
+  task: Task,
+  tone: z.infer<typeof statusUpdateToneSchema>,
+): string {
   switch (tone) {
     case 'casual':
       return `Hey team — still chipping away at **${task.title}** (${task.priority} priority). In progress; will share when there's a meaningful bump.`;
@@ -95,7 +102,9 @@ function draftTeamStatusText(
       : 'No tasks are currently in progress. Ready to pull the next priority item.';
   }
 
-  const lines = active.slice(0, 5).map((task) => `- ${task.title} (${task.priority})`);
+  const lines = active
+    .slice(0, 5)
+    .map((task) => `- ${task.title} (${task.priority})`);
 
   if (tone === 'casual') {
     return `Quick pulse — here's what's moving:\n${lines.join('\n')}`;
@@ -140,7 +149,9 @@ export function createDetectStaleTool() {
     description:
       'Find in-progress tasks stuck longer than the stale threshold (by days since statusUpdatedAt).',
     inputSchema: detectStaleToolInputSchema,
-    execute: async ({ staleDays }: z.infer<typeof detectStaleToolInputSchema>) => {
+    execute: async ({
+      staleDays,
+    }: z.infer<typeof detectStaleToolInputSchema>) => {
       const generatedAt = formatISO(new Date());
       const staleTasks = detectStaleTasks(listTasks(), {
         staleDays,

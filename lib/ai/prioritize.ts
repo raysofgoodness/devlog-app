@@ -1,10 +1,10 @@
-import { formatISO } from "date-fns";
+import { formatISO } from 'date-fns';
 
-import { getLlmProviderConfig, getLanguageModel } from "@/lib/ai/provider";
-import { scoreTask } from "@/lib/ai/scoring";
-import { listTasks } from "@/lib/repo/tasks";
-import type { Task } from "@/lib/schema";
-import type { PrioritizeResponse } from "@/lib/types/agent";
+import { getLlmProviderConfig, getLanguageModel } from '@/lib/ai/provider';
+import { scoreTask } from '@/lib/ai/scoring';
+import { listTasks } from '@/lib/repo/tasks';
+import type { Task } from '@/lib/schema';
+import type { PrioritizeResponse } from '@/lib/types/agent';
 
 export interface ScoredTaskEntry {
   task: Task;
@@ -43,7 +43,7 @@ export function scoreAndRankTasks(
   options?: { now?: string },
 ): ScoredTaskEntry[] {
   return tasks
-    .filter((task) => task.status !== "done")
+    .filter((task) => task.status !== 'done')
     .map((task) => ({ task, score: scoreTask(task, options) }))
     .toSorted((left, right) => right.score - left.score)
     .map((entry, index) => ({ ...entry, rank: index + 1 }));
@@ -81,7 +81,7 @@ export async function prioritizeTasks(options?: {
 
   if (scoredTasks.length === 0) {
     return {
-      plan: "No active tasks in the backlog. Add tasks or reopen items to get a daily plan.",
+      plan: 'No active tasks in the backlog. Add tasks or reopen items to get a daily plan.',
       scoredTasks: [],
       generatedAt,
       provider: providerConfig.provider,
@@ -89,7 +89,7 @@ export async function prioritizeTasks(options?: {
     };
   }
 
-  const { generateText } = await import("ai");
+  const { generateText } = await import('ai');
 
   const { text } = await generateText({
     model: getLanguageModel(),

@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-import { AgentMarkdown } from "@/components/agents/agent-markdown";
-import { AgentMockBadge } from "@/components/agents/agent-mock-badge";
-import { Button } from "@/components/ui/button";
+import { AgentMarkdown } from '@/components/agents/agent-markdown';
+import { AgentMockBadge } from '@/components/agents/agent-mock-badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -13,9 +13,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Spinner } from "@/components/ui/spinner";
-import { usePrioritizeAgent, type PrioritizeResponse } from "@/hooks/useAgents";
+} from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/spinner';
+import { usePrioritizeAgent, type PrioritizeResponse } from '@/hooks/useAgents';
 
 interface PrioritizeDialogProps {
   open: boolean;
@@ -41,7 +41,7 @@ export function PrioritizeDialog({
       setResult(response);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Could not generate plan";
+        error instanceof Error ? error.message : 'Could not generate plan';
       toast.error(message);
     }
   };
@@ -76,7 +76,7 @@ export function PrioritizeDialog({
                       <span>
                         <span className="font-mono text-xs text-muted-foreground">
                           #{task.rank}
-                        </span>{" "}
+                        </span>{' '}
                         {task.title}
                       </span>
                       <span className="shrink-0 font-mono text-xs text-muted-foreground">
@@ -104,7 +104,7 @@ export function PrioritizeDialog({
             disabled={prioritize.isPending}
           >
             {prioritize.isPending ? <Spinner data-icon="inline-start" /> : null}
-            {result ? "Regenerate" : "Generate plan"}
+            {result ? 'Regenerate' : 'Generate plan'}
           </Button>
         </DialogFooter>
       </DialogContent>

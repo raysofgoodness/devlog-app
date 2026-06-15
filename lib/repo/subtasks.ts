@@ -5,11 +5,7 @@ import { getDb } from '@/lib/db';
 import { getTask } from '@/lib/repo/tasks';
 import * as jsonStore from '@/lib/repo/json-store';
 import { useJsonStore } from '@/lib/repo/storage-backend';
-import {
-  subtaskSchema,
-  type Subtask,
-  type SubtaskStatus,
-} from '@/lib/schema';
+import { subtaskSchema, type Subtask, type SubtaskStatus } from '@/lib/schema';
 
 interface SubtaskRow {
   id: string;
@@ -66,7 +62,10 @@ export function toggleSubtaskStatus(id: string): Subtask | null {
     : toggleSubtaskStatusSqlite(id);
 }
 
-function createSubtasksForTaskSqlite(taskId: string, titles: string[]): Subtask[] {
+function createSubtasksForTaskSqlite(
+  taskId: string,
+  titles: string[],
+): Subtask[] {
   const parent = getTask(taskId);
 
   if (!parent) {
@@ -108,7 +107,10 @@ function createSubtasksForTaskSqlite(taskId: string, titles: string[]): Subtask[
   return createMany(titles);
 }
 
-export function createSubtasksForTask(taskId: string, titles: string[]): Subtask[] {
+export function createSubtasksForTask(
+  taskId: string,
+  titles: string[],
+): Subtask[] {
   if (titles.length === 0) {
     throw new Error('At least one subtask title is required');
   }
@@ -154,7 +156,5 @@ export function listSubtasksForTaskIds(taskIds: string[]): Subtask[] {
 }
 
 export function deleteSubtask(id: string): boolean {
-  return useJsonStore()
-    ? jsonStore.deleteSubtask(id)
-    : deleteSubtaskSqlite(id);
+  return useJsonStore() ? jsonStore.deleteSubtask(id) : deleteSubtaskSqlite(id);
 }

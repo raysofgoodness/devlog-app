@@ -1,11 +1,11 @@
-import { ListTodoIcon } from "lucide-react";
+import { ListTodoIcon } from 'lucide-react';
 
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 export function TaskListEmpty() {
   return (

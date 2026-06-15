@@ -16,7 +16,12 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="outline" size="icon-sm" disabled aria-label="Toggle theme">
+      <Button
+        variant="outline"
+        size="icon-sm"
+        disabled
+        aria-label="Toggle theme"
+      >
         <SunIcon />
       </Button>
     );

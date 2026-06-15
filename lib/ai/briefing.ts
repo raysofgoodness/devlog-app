@@ -2,10 +2,7 @@ import { formatISO } from 'date-fns';
 import { z } from 'zod';
 
 import { getLlmProviderConfig, getLanguageModel } from '@/lib/ai/provider';
-import {
-  createBriefingTools,
-  statusUpdateToneSchema,
-} from '@/lib/ai/tools';
+import { createBriefingTools, statusUpdateToneSchema } from '@/lib/ai/tools';
 import type { BriefingResponse } from '@/lib/types/agent';
 
 export const briefingRequestSchema = z.object({

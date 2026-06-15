@@ -28,10 +28,7 @@ export async function parseJsonResponse<T>(response: Response): Promise<T> {
       error?: string;
     } | null;
 
-    throw new ApiError(
-      body?.error ?? response.statusText,
-      response.status,
-    );
+    throw new ApiError(body?.error ?? response.statusText, response.status);
   }
 
   if (response.status === 204) {

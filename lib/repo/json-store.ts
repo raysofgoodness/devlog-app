@@ -70,9 +70,7 @@ function sortTasks(tasks: Task[], sort: ListTasksOptions['sort']): Task[] {
     );
   }
 
-  return sorted.sort(
-    (a, b) => b.createdAt.localeCompare(a.createdAt),
-  );
+  return sorted.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 export function listTasks(options: ListTasksOptions = {}): Task[] {
@@ -172,7 +170,10 @@ export function toggleSubtaskStatus(id: string): Subtask | null {
   return updated;
 }
 
-export function createSubtasksForTask(taskId: string, titles: string[]): Subtask[] {
+export function createSubtasksForTask(
+  taskId: string,
+  titles: string[],
+): Subtask[] {
   const parent = getTask(taskId);
 
   if (!parent) {

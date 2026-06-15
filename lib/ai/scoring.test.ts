@@ -21,14 +21,18 @@ describe('scoreTask', () => {
     const high = task({ priority: 'high' });
     const low = task({ priority: 'low' });
 
-    expect(scoreTask(high, { now: NOW })).toBeGreaterThan(scoreTask(low, { now: NOW }));
+    expect(scoreTask(high, { now: NOW })).toBeGreaterThan(
+      scoreTask(low, { now: NOW }),
+    );
   });
 
   it('ranks older tasks above newer ones when priority and status match', () => {
     const older = task({ createdAt: '2026-06-01T10:00:00+03:00' });
     const newer = task({ createdAt: '2026-06-14T10:00:00+03:00' });
 
-    expect(scoreTask(older, { now: NOW })).toBeGreaterThan(scoreTask(newer, { now: NOW }));
+    expect(scoreTask(older, { now: NOW })).toBeGreaterThan(
+      scoreTask(newer, { now: NOW }),
+    );
   });
 
   it('ranks in-progress tasks above todo when priority and age match', () => {
@@ -44,7 +48,9 @@ describe('scoreTask', () => {
     const done = task({ status: 'done', priority: 'high' });
     const active = task({ status: 'todo', priority: 'low' });
 
-    expect(scoreTask(done, { now: NOW })).toBeLessThan(scoreTask(active, { now: NOW }));
+    expect(scoreTask(done, { now: NOW })).toBeLessThan(
+      scoreTask(active, { now: NOW }),
+    );
   });
 
   it('returns the same score for identical inputs', () => {
@@ -60,6 +66,8 @@ describe('scoreTask', () => {
     const ancient = task({ createdAt: '2025-01-01T10:00:00+03:00' });
     const capped = task({ createdAt: '2026-05-01T10:00:00+03:00' });
 
-    expect(scoreTask(ancient, { now: NOW })).toBe(scoreTask(capped, { now: NOW }));
+    expect(scoreTask(ancient, { now: NOW })).toBe(
+      scoreTask(capped, { now: NOW }),
+    );
   });
 });

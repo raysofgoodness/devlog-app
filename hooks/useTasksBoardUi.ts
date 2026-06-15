@@ -12,9 +12,15 @@ export function useTasksBoardUi() {
   const [sort, setSort] = useState<SortOption>('createdAt');
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [editingTask, setEditingTask] = useState<TaskWithSubtasks | undefined>();
-  const [deletingTask, setDeletingTask] = useState<TaskWithSubtasks | null>(null);
-  const [decomposeTask, setDecomposeTask] = useState<TaskWithSubtasks | undefined>();
+  const [editingTask, setEditingTask] = useState<
+    TaskWithSubtasks | undefined
+  >();
+  const [deletingTask, setDeletingTask] = useState<TaskWithSubtasks | null>(
+    null,
+  );
+  const [decomposeTask, setDecomposeTask] = useState<
+    TaskWithSubtasks | undefined
+  >();
 
   const { data, isLoading, isError, error } = useTasks({ sort });
   const deleteTask = useDeleteTask();

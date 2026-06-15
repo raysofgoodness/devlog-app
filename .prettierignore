@@ -1,0 +1,9 @@
+.next
+out
+build
+node_modules
+pnpm-lock.yaml
+package-lock.json
+devlog.db
+devlog.json
+AGENT_LOG.md

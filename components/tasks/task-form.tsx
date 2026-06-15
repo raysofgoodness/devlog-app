@@ -31,10 +31,7 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  useCreateTask,
-  useUpdateTask,
-} from '@/hooks/useTasks';
+import { useCreateTask, useUpdateTask } from '@/hooks/useTasks';
 import {
   taskFormSchema,
   type Task,
@@ -42,13 +39,18 @@ import {
   type TaskPriority,
   type TaskStatus,
 } from '@/lib/schema';
-import {
-  TASK_PRIORITY_LABELS,
-  TASK_STATUS_LABELS,
-} from '@/lib/task-ui';
+import { TASK_PRIORITY_LABELS, TASK_STATUS_LABELS } from '@/lib/task-ui';
 
-const STATUS_OPTIONS = ['todo', 'in-progress', 'done'] as const satisfies readonly TaskStatus[];
-const PRIORITY_OPTIONS = ['low', 'medium', 'high'] as const satisfies readonly TaskPriority[];
+const STATUS_OPTIONS = [
+  'todo',
+  'in-progress',
+  'done',
+] as const satisfies readonly TaskStatus[];
+const PRIORITY_OPTIONS = [
+  'low',
+  'medium',
+  'high',
+] as const satisfies readonly TaskPriority[];
 
 const DEFAULT_VALUES: TaskFormValues = {
   title: '',

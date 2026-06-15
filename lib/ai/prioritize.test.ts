@@ -24,9 +24,21 @@ describe('scoreAndRankTasks', () => {
   it('excludes done tasks and orders by score descending', () => {
     const ranked = scoreAndRankTasks(
       [
-        task({ id: '00000000-0000-4000-8000-000000000001', priority: 'low', status: 'done' }),
-        task({ id: '00000000-0000-4000-8000-000000000002', priority: 'high', status: 'todo' }),
-        task({ id: '00000000-0000-4000-8000-000000000003', priority: 'medium', status: 'in-progress' }),
+        task({
+          id: '00000000-0000-4000-8000-000000000001',
+          priority: 'low',
+          status: 'done',
+        }),
+        task({
+          id: '00000000-0000-4000-8000-000000000002',
+          priority: 'high',
+          status: 'todo',
+        }),
+        task({
+          id: '00000000-0000-4000-8000-000000000003',
+          priority: 'medium',
+          status: 'in-progress',
+        }),
       ],
       { now: NOW },
     );

@@ -1,7 +1,9 @@
 import Database from 'better-sqlite3';
 import path from 'node:path';
 
-const globalForDb = globalThis as unknown as { db: Database.Database | undefined };
+const globalForDb = globalThis as unknown as {
+  db: Database.Database | undefined;
+};
 
 const DB_PATH = path.join(process.cwd(), 'devlog.db');
 
@@ -28,9 +30,9 @@ function migrate(db: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_subtasks_task_id ON subtasks (task_id);
   `);
 
-  const columns = db
-    .prepare('PRAGMA table_info(subtasks)')
-    .all() as { name: string }[];
+  const columns = db.prepare('PRAGMA table_info(subtasks)').all() as {
+    name: string;
+  }[];
 
   if (!columns.some((column) => column.name === 'status')) {
     db.exec(`
@@ -39,9 +41,9 @@ function migrate(db: Database.Database): void {
     `);
   }
 
-  const taskColumns = db
-    .prepare('PRAGMA table_info(tasks)')
-    .all() as { name: string }[];
+  const taskColumns = db.prepare('PRAGMA table_info(tasks)').all() as {
+    name: string;
+  }[];
 
   if (!taskColumns.some((column) => column.name === 'status_updated_at')) {
     db.exec(`

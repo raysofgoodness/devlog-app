@@ -1,9 +1,9 @@
-import { randomUUID } from "node:crypto";
-import { formatISO } from "date-fns";
+import { randomUUID } from 'node:crypto';
+import { formatISO } from 'date-fns';
 
-import { getDb } from "@/lib/db";
-import * as jsonStore from "@/lib/repo/json-store";
-import { useJsonStore } from "@/lib/repo/storage-backend";
+import { getDb } from '@/lib/db';
+import * as jsonStore from '@/lib/repo/json-store';
+import { useJsonStore } from '@/lib/repo/storage-backend';
 import {
   createTaskSchema,
   taskSchema,
@@ -13,7 +13,7 @@ import {
   type Task,
   type TaskStatus,
   type UpdateTaskInput,
-} from "@/lib/schema";
+} from '@/lib/schema';
 
 export type { ListTasksOptions };
 
@@ -45,21 +45,21 @@ function listTasksSqlite(options: ListTasksOptions = {}): Task[] {
   const params: Record<string, string> = {};
 
   if (options.status) {
-    conditions.push("status = @status");
+    conditions.push('status = @status');
     params.status = options.status;
   }
 
   const whereClause =
-    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
   const orderClause =
-    options.sort === "priority"
+    options.sort === 'priority'
       ? `ORDER BY CASE priority
           WHEN 'high' THEN 0
           WHEN 'medium' THEN 1
           WHEN 'low' THEN 2
         END`
-      : "ORDER BY created_at DESC";
+      : 'ORDER BY created_at DESC';
 
   const stmt = db.prepare(
     `SELECT id, title, description, status, priority, created_at, status_updated_at
@@ -160,7 +160,7 @@ function updateTaskSqlite(id: string, input: UpdateTaskInput): Task | null {
 
 function deleteTaskSqlite(id: string): boolean {
   const db = getDb();
-  const stmt = db.prepare("DELETE FROM tasks WHERE id = @id");
+  const stmt = db.prepare('DELETE FROM tasks WHERE id = @id');
   const result = stmt.run({ id });
   return result.changes > 0;
 }

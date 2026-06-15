@@ -14,7 +14,11 @@ import type { DecomposeResponse } from '@/lib/types/agent';
 const claritySchema = z.object({
   isClear: z.boolean(),
   questions: z.array(z.string().trim().min(1)).max(10).optional(),
-  proposedSubtasks: z.array(z.string().trim().min(1).max(200)).min(1).max(20).optional(),
+  proposedSubtasks: z
+    .array(z.string().trim().min(1).max(200))
+    .min(1)
+    .max(20)
+    .optional(),
 });
 
 const CLASSIFY_SYSTEM = `You are a task decomposition assistant for DevLog.
@@ -39,7 +43,11 @@ function buildClassifyPrompt(task: Task, answers?: string[]): string {
   ];
 
   if (answers && answers.length > 0) {
-    lines.push('', 'User clarifications:', ...answers.map((answer, index) => `${index + 1}. ${answer}`));
+    lines.push(
+      '',
+      'User clarifications:',
+      ...answers.map((answer, index) => `${index + 1}. ${answer}`),
+    );
   }
 
   return lines.join('\n');
