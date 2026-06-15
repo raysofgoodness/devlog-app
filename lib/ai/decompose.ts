@@ -9,41 +9,13 @@ import {
 import { createCreateSubtasksTool } from '@/lib/ai/tools';
 import { getTask } from '@/lib/repo/tasks';
 import type { Subtask, Task } from '@/lib/schema';
+import type { DecomposeResponse } from '@/lib/types/agent';
 
 const claritySchema = z.object({
   isClear: z.boolean(),
   questions: z.array(z.string().trim().min(1)).max(10).optional(),
   proposedSubtasks: z.array(z.string().trim().min(1).max(200)).min(1).max(20).optional(),
 });
-
-export type DecomposeResult =
-  | {
-      kind: 'questions';
-      taskId: string;
-      taskTitle: string;
-      questions: string[];
-      generatedAt: string;
-      provider: ReturnType<typeof getLlmProviderConfig>['provider'];
-      isMock: boolean;
-    }
-  | {
-      kind: 'proposal';
-      taskId: string;
-      taskTitle: string;
-      proposedSubtasks: string[];
-      generatedAt: string;
-      provider: ReturnType<typeof getLlmProviderConfig>['provider'];
-      isMock: boolean;
-    }
-  | {
-      kind: 'created';
-      taskId: string;
-      taskTitle: string;
-      subtasks: Subtask[];
-      generatedAt: string;
-      provider: ReturnType<typeof getLlmProviderConfig>['provider'];
-      isMock: boolean;
-    };
 
 const CLASSIFY_SYSTEM = `You are a task decomposition assistant for DevLog.
 
@@ -174,7 +146,7 @@ export async function decomposeTask(input: {
   confirm?: boolean;
   subtasks?: string[];
   answers?: string[];
-}): Promise<DecomposeResult> {
+}): Promise<DecomposeResponse> {
   const providerConfig = getLlmProviderConfig();
   const generatedAt = formatISO(new Date());
   const meta = {

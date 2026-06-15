@@ -57,3 +57,8 @@ export type TaskWithSubtasks = Task & {
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 export type TaskFormValues = z.infer<typeof taskFormSchema>;
+
+export interface ListTasksOptions {
+  status?: TaskStatus;
+  sort?: 'priority' | 'createdAt';
+}

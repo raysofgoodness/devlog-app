@@ -3,20 +3,19 @@ import { formatISO } from "date-fns";
 
 import { getDb } from "@/lib/db";
 import * as jsonStore from "@/lib/repo/json-store";
+import { useJsonStore } from "@/lib/repo/storage-backend";
 import {
   createTaskSchema,
   taskSchema,
   updateTaskSchema,
   type CreateTaskInput,
+  type ListTasksOptions,
   type Task,
   type TaskStatus,
   type UpdateTaskInput,
 } from "@/lib/schema";
 
-export interface ListTasksOptions {
-  status?: TaskStatus;
-  sort?: "priority" | "createdAt";
-}
+export type { ListTasksOptions };
 
 interface TaskRow {
   id: string;
@@ -25,10 +24,6 @@ interface TaskRow {
   status: TaskStatus;
   priority: string;
   created_at: string;
-}
-
-function useJsonStore(): boolean {
-  return process.env.STORAGE_BACKEND === "json";
 }
 
 function rowToTask(row: TaskRow): Task {

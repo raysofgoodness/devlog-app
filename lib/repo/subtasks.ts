@@ -4,6 +4,7 @@ import { formatISO } from 'date-fns';
 import { getDb } from '@/lib/db';
 import { getTask } from '@/lib/repo/tasks';
 import * as jsonStore from '@/lib/repo/json-store';
+import { useJsonStore } from '@/lib/repo/storage-backend';
 import {
   subtaskSchema,
   type Subtask,
@@ -16,10 +17,6 @@ interface SubtaskRow {
   title: string;
   status: SubtaskStatus;
   created_at: string;
-}
-
-function useJsonStore(): boolean {
-  return process.env.STORAGE_BACKEND === 'json';
 }
 
 function rowToSubtask(row: SubtaskRow): Subtask {

@@ -6,6 +6,7 @@ import {
   createBriefingTools,
   statusUpdateToneSchema,
 } from '@/lib/ai/tools';
+import type { BriefingResponse } from '@/lib/types/agent';
 
 export const briefingRequestSchema = z.object({
   limit: z.number().int().min(1).max(50).optional(),
@@ -14,19 +15,6 @@ export const briefingRequestSchema = z.object({
 });
 
 export type BriefingRequest = z.infer<typeof briefingRequestSchema>;
-
-export interface BriefingResult {
-  briefing: string;
-  toolData: {
-    prioritize?: unknown;
-    detectStale?: unknown;
-    draftStatusUpdate?: unknown;
-  };
-  stepCount: number;
-  generatedAt: string;
-  provider: ReturnType<typeof getLlmProviderConfig>['provider'];
-  isMock: boolean;
-}
 
 const BRIEFING_SYSTEM = `You are the DevLog Daily Briefing orchestrator.
 
@@ -62,8 +50,8 @@ Call all three tools, then write the final markdown briefing.`;
 
 function collectToolData(
   toolResults: Array<{ toolName: string; output: unknown }>,
-): BriefingResult['toolData'] {
-  const data: BriefingResult['toolData'] = {};
+): BriefingResponse['toolData'] {
+  const data: BriefingResponse['toolData'] = {};
 
   for (const result of toolResults) {
     if (result.toolName === 'prioritize') {
@@ -84,7 +72,7 @@ function collectToolData(
 
 export async function generateDailyBriefing(
   input: BriefingRequest = {},
-): Promise<BriefingResult> {
+): Promise<BriefingResponse> {
   const providerConfig = getLlmProviderConfig();
   const generatedAt = formatISO(new Date());
   const { generateText, stepCountIs } = await import('ai');

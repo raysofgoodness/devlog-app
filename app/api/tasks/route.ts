@@ -9,10 +9,9 @@ import {
 import {
   createTask,
   listTasks,
-  type ListTasksOptions,
 } from '@/lib/repo/tasks';
 import { attachSubtasksToTasks } from '@/lib/repo/task-with-subtasks';
-import { createTaskSchema, taskStatusSchema } from '@/lib/schema';
+import { createTaskSchema, taskStatusSchema, type ListTasksOptions } from '@/lib/schema';
 
 export const runtime = 'nodejs';
 

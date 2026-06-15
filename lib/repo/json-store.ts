@@ -9,10 +9,10 @@ import {
   taskSchema,
   updateTaskSchema,
   type CreateTaskInput,
+  type ListTasksOptions,
   type Subtask,
   type Task,
   type TaskPriority,
-  type TaskStatus,
   type UpdateTaskInput,
 } from '@/lib/schema';
 
@@ -27,11 +27,6 @@ const PRIORITY_ORDER: Record<TaskPriority, number> = {
 interface StoreData {
   tasks: Task[];
   subtasks: Subtask[];
-}
-
-export interface ListTasksOptions {
-  status?: TaskStatus;
-  sort?: 'priority' | 'createdAt';
 }
 
 function readStore(): StoreData {

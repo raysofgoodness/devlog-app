@@ -4,27 +4,12 @@ import { getLlmProviderConfig, getLanguageModel } from "@/lib/ai/provider";
 import { scoreTask } from "@/lib/ai/scoring";
 import { listTasks } from "@/lib/repo/tasks";
 import type { Task } from "@/lib/schema";
+import type { PrioritizeResponse } from "@/lib/types/agent";
 
 export interface ScoredTaskEntry {
   task: Task;
   score: number;
   rank: number;
-}
-
-export interface PrioritizeResult {
-  plan: string;
-  scoredTasks: Array<{
-    taskId: string;
-    title: string;
-    status: Task["status"];
-    priority: Task["priority"];
-    createdAt: string;
-    score: number;
-    rank: number;
-  }>;
-  generatedAt: string;
-  provider: ReturnType<typeof getLlmProviderConfig>["provider"];
-  isMock: boolean;
 }
 
 const PRIORITIZE_SYSTEM = `You are a productivity coach for DevLog, a developer task tracker.
@@ -85,7 +70,7 @@ ${JSON.stringify(briefs, null, 2)}`;
 export async function prioritizeTasks(options?: {
   limit?: number;
   now?: string;
-}): Promise<PrioritizeResult> {
+}): Promise<PrioritizeResponse> {
   const providerConfig = getLlmProviderConfig();
   const generatedAt = options?.now ?? formatISO(new Date());
 

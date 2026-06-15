@@ -1,16 +1,13 @@
 import type {
   CreateTaskInput,
+  ListTasksOptions,
   Subtask,
   Task,
-  TaskStatus,
   TaskWithSubtasks,
   UpdateTaskInput,
 } from '@/lib/schema';
 
-export interface ListTasksParams {
-  status?: TaskStatus;
-  sort?: 'priority' | 'createdAt';
-}
+export type ListTasksParams = ListTasksOptions;
 
 export class ApiError extends Error {
   readonly status: number;
@@ -25,7 +22,7 @@ export class ApiError extends Error {
 const TASKS_BASE = '/api/tasks';
 const SUBTASKS_BASE = '/api/subtasks';
 
-async function parseResponse<T>(response: Response): Promise<T> {
+export async function parseJsonResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const body = (await response.json().catch(() => null)) as {
       error?: string;
@@ -66,12 +63,12 @@ export async function fetchTasks(
   params?: ListTasksParams,
 ): Promise<TaskWithSubtasks[]> {
   const response = await fetch(buildTasksUrl(params));
-  return parseResponse<TaskWithSubtasks[]>(response);
+  return parseJsonResponse<TaskWithSubtasks[]>(response);
 }
 
 export async function fetchTask(id: string): Promise<TaskWithSubtasks> {
   const response = await fetch(`${TASKS_BASE}/${id}`);
-  return parseResponse<TaskWithSubtasks>(response);
+  return parseJsonResponse<TaskWithSubtasks>(response);
 }
 
 export async function createTask(input: CreateTaskInput): Promise<Task> {
@@ -81,7 +78,7 @@ export async function createTask(input: CreateTaskInput): Promise<Task> {
     body: JSON.stringify(input),
   });
 
-  return parseResponse<Task>(response);
+  return parseJsonResponse<Task>(response);
 }
 
 export async function updateTask(
@@ -94,7 +91,7 @@ export async function updateTask(
     body: JSON.stringify(input),
   });
 
-  return parseResponse<Task>(response);
+  return parseJsonResponse<Task>(response);
 }
 
 export async function deleteTask(id: string): Promise<void> {
@@ -102,7 +99,7 @@ export async function deleteTask(id: string): Promise<void> {
     method: 'DELETE',
   });
 
-  await parseResponse<void>(response);
+  await parseJsonResponse<void>(response);
 }
 
 export async function toggleSubtask(id: string): Promise<Subtask> {
@@ -110,7 +107,7 @@ export async function toggleSubtask(id: string): Promise<Subtask> {
     method: 'PATCH',
   });
 
-  return parseResponse<Subtask>(response);
+  return parseJsonResponse<Subtask>(response);
 }
 
 export async function deleteSubtask(id: string): Promise<void> {
@@ -118,5 +115,5 @@ export async function deleteSubtask(id: string): Promise<void> {
     method: 'DELETE',
   });
 
-  await parseResponse<void>(response);
+  await parseJsonResponse<void>(response);
 }
