@@ -35,7 +35,14 @@ function readStore(): StoreData {
     const parsed = JSON.parse(raw) as StoreData;
 
     return {
-      tasks: parsed.tasks.map((task) => taskSchema.parse(task)),
+      tasks: parsed.tasks.map((task) => {
+        const raw = task as Task & { statusUpdatedAt?: string };
+
+        return taskSchema.parse({
+          ...raw,
+          statusUpdatedAt: raw.statusUpdatedAt ?? raw.createdAt,
+        });
+      }),
       subtasks: (parsed.subtasks ?? []).map((subtask) => {
         const raw = subtask as Subtask & { status?: Subtask['status'] };
 
@@ -88,13 +95,16 @@ export function createTask(input: CreateTaskInput): Task {
   const data = createTaskSchema.parse(input);
   const store = readStore();
 
+  const now = formatISO(new Date());
+
   const task = taskSchema.parse({
     id: randomUUID(),
     title: data.title,
     description: data.description,
     status: data.status,
     priority: data.priority,
-    createdAt: formatISO(new Date()),
+    createdAt: now,
+    statusUpdatedAt: now,
   });
 
   store.tasks.push(task);
@@ -113,9 +123,13 @@ export function updateTask(id: string, input: UpdateTaskInput): Task | null {
   }
 
   const current = store.tasks[index];
+  const statusChanged =
+    data.status !== undefined && data.status !== current.status;
+
   const updated = taskSchema.parse({
     ...current,
     ...data,
+    ...(statusChanged ? { statusUpdatedAt: formatISO(new Date()) } : {}),
   });
 
   store.tasks[index] = updated;

@@ -6,13 +6,16 @@ import type { Task } from '@/lib/schema';
 const NOW = '2026-06-15T12:00:00+03:00';
 
 function task(overrides: Partial<Task> = {}): Task {
+  const createdAt = overrides.createdAt ?? '2026-06-10T10:00:00+03:00';
+
   return {
     id: '00000000-0000-4000-8000-000000000001',
     title: 'Task',
     description: '',
     priority: 'medium',
     status: 'todo',
-    createdAt: '2026-06-10T10:00:00+03:00',
+    createdAt,
+    statusUpdatedAt: overrides.statusUpdatedAt ?? createdAt,
     ...overrides,
   };
 }

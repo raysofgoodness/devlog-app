@@ -24,6 +24,7 @@ interface TaskRow {
   status: TaskStatus;
   priority: string;
   created_at: string;
+  status_updated_at: string | null;
 }
 
 function rowToTask(row: TaskRow): Task {
@@ -34,6 +35,7 @@ function rowToTask(row: TaskRow): Task {
     status: row.status,
     priority: row.priority,
     createdAt: row.created_at,
+    statusUpdatedAt: row.status_updated_at ?? row.created_at,
   });
 }
 
@@ -60,7 +62,7 @@ function listTasksSqlite(options: ListTasksOptions = {}): Task[] {
       : "ORDER BY created_at DESC";
 
   const stmt = db.prepare(
-    `SELECT id, title, description, status, priority, created_at
+    `SELECT id, title, description, status, priority, created_at, status_updated_at
      FROM tasks
      ${whereClause}
      ${orderClause}`,
@@ -73,7 +75,7 @@ function listTasksSqlite(options: ListTasksOptions = {}): Task[] {
 function getTaskSqlite(id: string): Task | null {
   const db = getDb();
   const stmt = db.prepare(
-    `SELECT id, title, description, status, priority, created_at
+    `SELECT id, title, description, status, priority, created_at, status_updated_at
      FROM tasks
      WHERE id = @id`,
   );
@@ -86,18 +88,21 @@ function createTaskSqlite(input: CreateTaskInput): Task {
   const data = createTaskSchema.parse(input);
   const db = getDb();
 
+  const now = formatISO(new Date());
+
   const task = taskSchema.parse({
     id: randomUUID(),
     title: data.title,
     description: data.description,
     status: data.status,
     priority: data.priority,
-    createdAt: formatISO(new Date()),
+    createdAt: now,
+    statusUpdatedAt: now,
   });
 
   const stmt = db.prepare(
-    `INSERT INTO tasks (id, title, description, status, priority, created_at)
-     VALUES (@id, @title, @description, @status, @priority, @createdAt)`,
+    `INSERT INTO tasks (id, title, description, status, priority, created_at, status_updated_at)
+     VALUES (@id, @title, @description, @status, @priority, @createdAt, @statusUpdatedAt)`,
   );
 
   stmt.run({
@@ -107,6 +112,7 @@ function createTaskSqlite(input: CreateTaskInput): Task {
     status: task.status,
     priority: task.priority,
     createdAt: task.createdAt,
+    statusUpdatedAt: task.statusUpdatedAt,
   });
 
   return task;
@@ -120,9 +126,13 @@ function updateTaskSqlite(id: string, input: UpdateTaskInput): Task | null {
     return null;
   }
 
+  const statusChanged =
+    data.status !== undefined && data.status !== existing.status;
+
   const updated = taskSchema.parse({
     ...existing,
     ...data,
+    ...(statusChanged ? { statusUpdatedAt: formatISO(new Date()) } : {}),
   });
 
   const db = getDb();
@@ -131,7 +141,8 @@ function updateTaskSqlite(id: string, input: UpdateTaskInput): Task | null {
      SET title = @title,
          description = @description,
          status = @status,
-         priority = @priority
+         priority = @priority,
+         status_updated_at = @statusUpdatedAt
      WHERE id = @id`,
   );
 
@@ -141,6 +152,7 @@ function updateTaskSqlite(id: string, input: UpdateTaskInput): Task | null {
     description: updated.description,
     status: updated.status,
     priority: updated.priority,
+    statusUpdatedAt: updated.statusUpdatedAt,
   });
 
   return result.changes > 0 ? updated : null;

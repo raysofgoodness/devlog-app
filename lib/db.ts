@@ -38,6 +38,21 @@ function migrate(db: Database.Database): void {
       ADD COLUMN status TEXT NOT NULL DEFAULT 'todo';
     `);
   }
+
+  const taskColumns = db
+    .prepare('PRAGMA table_info(tasks)')
+    .all() as { name: string }[];
+
+  if (!taskColumns.some((column) => column.name === 'status_updated_at')) {
+    db.exec(`
+      ALTER TABLE tasks
+      ADD COLUMN status_updated_at TEXT;
+
+      UPDATE tasks
+      SET status_updated_at = created_at
+      WHERE status_updated_at IS NULL;
+    `);
+  }
 }
 
 export function getDb(): Database.Database {

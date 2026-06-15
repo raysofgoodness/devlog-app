@@ -40,6 +40,7 @@ export interface StaleTaskSummary {
   priority: Task['priority'];
   status: Task['status'];
   createdAt: string;
+  statusUpdatedAt: string;
   daysInProgress: number;
 }
 
@@ -55,7 +56,7 @@ export function detectStaleTasks(
       task,
       daysInProgress: Math.max(
         0,
-        differenceInCalendarDays(now, parseISO(task.createdAt)),
+        differenceInCalendarDays(now, parseISO(task.statusUpdatedAt)),
       ),
     }))
     .filter((entry) => entry.daysInProgress >= options.staleDays)
@@ -66,6 +67,7 @@ export function detectStaleTasks(
       priority: task.priority,
       status: task.status,
       createdAt: task.createdAt,
+      statusUpdatedAt: task.statusUpdatedAt,
       daysInProgress,
     }));
 }
@@ -136,7 +138,7 @@ export function createPrioritizeTool() {
 export function createDetectStaleTool() {
   return tool({
     description:
-      'Find in-progress tasks that have been stuck longer than the stale threshold (by days since createdAt).',
+      'Find in-progress tasks stuck longer than the stale threshold (by days since statusUpdatedAt).',
     inputSchema: detectStaleToolInputSchema,
     execute: async ({ staleDays }: z.infer<typeof detectStaleToolInputSchema>) => {
       const generatedAt = formatISO(new Date());

@@ -11,6 +11,7 @@ export const taskSchema = z.object({
   status: taskStatusSchema,
   priority: taskPrioritySchema,
   createdAt: z.iso.datetime({ offset: true }),
+  statusUpdatedAt: z.iso.datetime({ offset: true }),
 });
 
 export const subtaskSchema = z.object({

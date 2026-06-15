@@ -6,13 +6,16 @@ import type { Task } from '@/lib/schema';
 const NOW = '2026-06-15T12:00:00+03:00';
 
 function task(overrides: Partial<Task> = {}): Task {
+  const createdAt = overrides.createdAt ?? '2026-06-10T10:00:00+03:00';
+
   return {
     id: '00000000-0000-4000-8000-000000000001',
     title: 'Task',
     description: '',
     priority: 'medium',
     status: 'in-progress',
-    createdAt: '2026-06-10T10:00:00+03:00',
+    createdAt,
+    statusUpdatedAt: overrides.statusUpdatedAt ?? createdAt,
     ...overrides,
   };
 }
@@ -24,6 +27,7 @@ describe('detectStaleTasks', () => {
         task({
           id: '00000000-0000-4000-8000-000000000001',
           createdAt: '2026-06-01T10:00:00+03:00',
+          statusUpdatedAt: '2026-06-01T10:00:00+03:00',
         }),
         task({
           id: '00000000-0000-4000-8000-000000000002',
@@ -38,6 +42,7 @@ describe('detectStaleTasks', () => {
         task({
           id: '00000000-0000-4000-8000-000000000004',
           createdAt: '2026-06-14T10:00:00+03:00',
+          statusUpdatedAt: '2026-06-14T10:00:00+03:00',
         }),
       ],
       { staleDays: 3, now: NOW },
@@ -48,9 +53,28 @@ describe('detectStaleTasks', () => {
     expect(stale[0]?.daysInProgress).toBe(14);
   });
 
+  it('uses statusUpdatedAt instead of createdAt for in-progress duration', () => {
+    const stale = detectStaleTasks(
+      [
+        task({
+          createdAt: '2026-06-01T10:00:00+03:00',
+          statusUpdatedAt: '2026-06-14T10:00:00+03:00',
+        }),
+      ],
+      { staleDays: 3, now: NOW },
+    );
+
+    expect(stale).toEqual([]);
+  });
+
   it('includes tasks exactly at the stale threshold', () => {
     const stale = detectStaleTasks(
-      [task({ createdAt: '2026-06-12T10:00:00+03:00' })],
+      [
+        task({
+          createdAt: '2026-06-12T10:00:00+03:00',
+          statusUpdatedAt: '2026-06-12T10:00:00+03:00',
+        }),
+      ],
       { staleDays: 3, now: NOW },
     );
 
@@ -63,11 +87,11 @@ describe('detectStaleTasks', () => {
       [
         task({
           id: '00000000-0000-4000-8000-000000000001',
-          createdAt: '2026-06-10T10:00:00+03:00',
+          statusUpdatedAt: '2026-06-10T10:00:00+03:00',
         }),
         task({
           id: '00000000-0000-4000-8000-000000000002',
-          createdAt: '2026-06-01T10:00:00+03:00',
+          statusUpdatedAt: '2026-06-01T10:00:00+03:00',
         }),
       ],
       { staleDays: 3, now: NOW },
@@ -83,7 +107,10 @@ describe('detectStaleTasks', () => {
     const stale = detectStaleTasks(
       [
         task({ status: 'todo' }),
-        task({ createdAt: '2026-06-14T10:00:00+03:00' }),
+        task({
+          createdAt: '2026-06-14T10:00:00+03:00',
+          statusUpdatedAt: '2026-06-14T10:00:00+03:00',
+        }),
       ],
       { staleDays: 3, now: NOW },
     );
