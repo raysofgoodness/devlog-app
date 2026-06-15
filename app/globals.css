@@ -122,7 +122,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply min-h-svh bg-background text-foreground;
+    background-attachment: fixed;
     background-image:
       radial-gradient(
         ellipse 120% 80% at 50% -30%,

@@ -65,7 +65,7 @@ export function TaskCard({
   };
 
   return (
-    <Card className="transition-colors hover:border-primary/30">
+    <Card className="flex h-full flex-col transition-colors hover:border-primary/30">
       <CardHeader className="gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <TaskStatusBadge status={task.status} />
@@ -89,7 +89,7 @@ export function TaskCard({
         ) : null}
       </CardHeader>
 
-      <CardContent className="flex flex-col gap-3 pt-0">
+      <CardContent className="flex flex-1 flex-col gap-3 pt-0">
         {subtasks.length > 0 ? (
           <ul className="space-y-2 rounded-lg border bg-muted/20 p-3">
             {subtasks.map((subtask) => {
@@ -139,12 +139,12 @@ export function TaskCard({
           </ul>
         ) : null}
 
-        <p className="font-mono text-xs text-muted-foreground">
+        <p className="mt-auto font-mono text-xs text-muted-foreground">
           Created {createdLabel}
         </p>
       </CardContent>
 
-      <CardFooter className="flex-wrap gap-2 border-t bg-muted/30">
+      <CardFooter className="mt-auto flex-wrap gap-2 border-t bg-muted/30">
         {onDecompose && task.status !== "done" ? (
           <Button
             variant="outline"

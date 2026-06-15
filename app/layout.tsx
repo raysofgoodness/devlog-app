@@ -28,9 +28,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${outfit.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${outfit.variable} ${jetbrainsMono.variable} h-full min-h-svh antialiased`}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-svh flex-col bg-background">
         <Providers>{children}</Providers>
       </body>
     </html>
