@@ -6,9 +6,9 @@ import {
   getLlmProviderConfig,
   getLlmProviderOptions,
 } from '@/lib/ai/provider';
-import { createCreateSubtasksTool } from '@/lib/ai/tools';
+import { createSubtasksForTask } from '@/lib/repo/subtasks';
 import { getTask } from '@/lib/repo/tasks';
-import type { Subtask, Task } from '@/lib/schema';
+import type { Task } from '@/lib/schema';
 import type { DecomposeResponse } from '@/lib/types/agent';
 
 const claritySchema = z.object({
@@ -26,11 +26,6 @@ Rules:
 - If the task is actionable → isClear=true and return 3-7 proposedSubtasks as short imperative titles.
 - proposedSubtasks must be independently completable and ordered for momentum.
 - Never return both questions and proposedSubtasks.`;
-
-const CREATE_SYSTEM = `You persist user-approved subtasks via the createSubtasks tool.
-
-Call createSubtasks exactly once with the provided taskId and subtask titles.
-Do not invent extra subtasks beyond the approved list.`;
 
 function buildClassifyPrompt(task: Task, answers?: string[]): string {
   const lines = [
@@ -105,42 +100,6 @@ async function analyzeTaskClarity(
   return output;
 }
 
-async function persistApprovedSubtasks(
-  task: Task,
-  subtasks: string[],
-): Promise<Subtask[]> {
-  const { generateText, stepCountIs } = await import('ai');
-
-  const createSubtasks = createCreateSubtasksTool();
-
-  const { toolResults } = await generateText({
-    model: getLanguageModel(),
-    system: CREATE_SYSTEM,
-    prompt: `User confirmed subtask creation for task "${task.title}" (${task.id}).
-
-Approved subtasks:
-${subtasks.map((title, index) => `${index + 1}. ${title}`).join('\n')}
-
-Call createSubtasks now.`,
-    tools: { createSubtasks },
-    stopWhen: stepCountIs(3),
-  });
-
-  const created = toolResults
-    .filter((result) => result.toolName === 'createSubtasks')
-    .flatMap((result) => {
-      const payload = result.output as { subtasks?: Subtask[] } | undefined;
-      return payload?.subtasks ?? [];
-    });
-
-  if (created.length > 0) {
-    return created;
-  }
-
-  const { createSubtasksForTask } = await import('@/lib/repo/subtasks');
-  return createSubtasksForTask(task.id, subtasks);
-}
-
 export async function decomposeTask(input: {
   taskId: string;
   confirm?: boolean;
@@ -166,7 +125,7 @@ export async function decomposeTask(input: {
       throw new Error('subtasks are required when confirm is true');
     }
 
-    const created = await persistApprovedSubtasks(task, input.subtasks);
+    const created = createSubtasksForTask(task.id, input.subtasks);
 
     return {
       kind: 'created',
