@@ -153,7 +153,7 @@ export function TaskCard({
             aria-label={`Decompose ${task.title}`}
           >
             <ListTreeIcon data-icon="inline-start" />
-            Split
+            Decompose
           </Button>
         ) : null}
         <Button
