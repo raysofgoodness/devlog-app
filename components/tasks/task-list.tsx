@@ -52,9 +52,9 @@ export function TaskList({
   }
 
   return (
-    <ul className="grid auto-rows-fr gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {tasks.map((task) => (
-        <li key={task.id} className="h-full min-h-0">
+        <li key={task.id} className="min-h-0 w-full">
           <TaskCard
             task={task}
             onEdit={onEdit}

@@ -65,7 +65,7 @@ export function TaskCard({
   };
 
   return (
-    <Card className="flex h-full flex-col transition-colors hover:border-primary/30">
+    <Card className="transition-colors hover:border-primary/30">
       <CardHeader className="gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <TaskStatusBadge status={task.status} />
@@ -78,20 +78,25 @@ export function TaskCard({
         </div>
         <CardTitle className="text-lg leading-snug">{task.title}</CardTitle>
         {task.description ? (
-          <CardDescription className="line-clamp-3 text-sm leading-relaxed">
+          <CardDescription
+            className={cn(
+              'text-sm leading-relaxed',
+              subtasks.length > 0 ? 'line-clamp-2' : 'line-clamp-3',
+            )}
+          >
             {task.description}
           </CardDescription>
         ) : null}
-        {subtasks.length > 0 ? (
+      </CardHeader>
+
+      {subtasks.length > 0 ? (
+        <CardContent className="flex flex-col gap-3 pt-0">
           <Progress value={progressValue} className="gap-1.5">
             <span className="text-xs text-muted-foreground">Subtasks</span>
           </Progress>
-        ) : null}
-      </CardHeader>
-
-      <CardContent className="flex flex-1 flex-col gap-3 pt-0">
-        {subtasks.length > 0 ? (
-          <ul className="space-y-2 rounded-lg border bg-muted/20 p-3">
+          <ul
+            className="max-h-32 space-y-2 overflow-y-auto rounded-lg border bg-muted/20 p-3"
+          >
             {subtasks.map((subtask) => {
               const isDone = subtask.status === 'done';
               const isToggling =
@@ -137,43 +142,47 @@ export function TaskCard({
               );
             })}
           </ul>
-        ) : null}
+        </CardContent>
+      ) : null}
 
-        <p className="mt-auto font-mono text-xs text-muted-foreground">
-          Created {createdLabel}
-        </p>
-      </CardContent>
-
-      <CardFooter className="mt-auto flex-wrap gap-2 border-t bg-muted/30">
-        {onDecompose && task.status !== 'done' ? (
+      <CardFooter className="flex-col gap-2 border-t bg-muted/30">
+        <div className="flex w-full gap-2">
+          {onDecompose && task.status !== 'done' ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-w-0 flex-1"
+              onClick={() => onDecompose(task)}
+              aria-label={`Decompose ${task.title}`}
+            >
+              <ListTreeIcon data-icon="inline-start" />
+              Decompose
+            </Button>
+          ) : null}
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onDecompose(task)}
-            aria-label={`Decompose ${task.title}`}
+            className="min-w-0 flex-1"
+            onClick={() => onEdit(task)}
+            aria-label={`Edit ${task.title}`}
           >
-            <ListTreeIcon data-icon="inline-start" />
-            Decompose
+            <PencilIcon data-icon="inline-start" />
+            Edit
           </Button>
-        ) : null}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onEdit(task)}
-          aria-label={`Edit ${task.title}`}
-        >
-          <PencilIcon data-icon="inline-start" />
-          Edit
-        </Button>
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() => onDelete(task)}
-          aria-label={`Delete ${task.title}`}
-        >
-          <Trash2Icon data-icon="inline-start" />
-          Delete
-        </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            className="min-w-0 flex-1"
+            onClick={() => onDelete(task)}
+            aria-label={`Delete ${task.title}`}
+          >
+            <Trash2Icon data-icon="inline-start" />
+            Delete
+          </Button>
+        </div>
+        <p className="font-mono text-xs text-muted-foreground">
+          Created {createdLabel}
+        </p>
       </CardFooter>
     </Card>
   );
